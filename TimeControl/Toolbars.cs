@@ -5,57 +5,60 @@ using KSP.UI.Screens;
 
 namespace TimeControl
 {
-    [KSPAddon( KSPAddon.Startup.MainMenu, true )]
+    [KSPAddon( KSPAddon.Startup.Instantly, true )]
     internal sealed class Toolbars : MonoBehaviour
     {
         #region Singleton
-        private static Toolbars instance;
-        internal static Toolbars Instance { get { return instance; } }
+        internal static Toolbars Instance { get; private set; }
+        internal bool IsReady { get; private set; } = false;
         #endregion
 
         private ApplicationLauncher.AppScenes AppScenes = ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.TRACKSTATION;
-
-        internal Texture2D buttonTexture;
-
+        private Texture2D buttonTexture;
         private ApplicationLauncherButton appLauncherButton;
+        private BlizzyToolbar.IButton toolbarButton;
+        
+        private bool StockToolbarEnabled
+        {
+            get => HighLogic.CurrentGame?.Parameters?.CustomParams<TimeControlParameterNode>()?.UseStockToolbar ?? false;
+        }
 
-        internal bool StockToolbarEnabled { get { return Settings.Instance.UseStockToolbar; } }
-        internal static bool isAvailable { get { return ApplicationLauncher.Ready && ApplicationLauncher.Instance != null; } }
-
-        internal bool IsReady { get; private set; } = false;
+        private static bool AppLauncherIsAvailable
+        {
+            get => ApplicationLauncher.Ready && ApplicationLauncher.Instance != null;
+        }
 
         #region MonoBehavior
         private void Awake()
         {
             DontDestroyOnLoad( this );
-            instance = this;
+            Instance = this;
         }
 
         private void Start()
         {
-            buttonTexture = TCResources.stockIcon;
-
-            GameEvents.onGUIApplicationLauncherReady.Add( AppLauncherReady );
-            GameEvents.onGUIApplicationLauncherDestroyed.Add( AppLauncherDestroyed );
-            GameEvents.onLevelWasLoadedGUIReady.Add( AppLauncherDestroyed );
-
-            StartCoroutine( StartAfterSettingsAndGUIReady() );
+            StartCoroutine( Configure() );
         }
 
         #endregion
-
-        private BlizzyToolbar.IButton toolbarButton;
 
 
         /// <summary>
         /// Configures the Toolbars once the Settings are loaded
         /// </summary>
-        public IEnumerator StartAfterSettingsAndGUIReady()
-        {
-            while (!Settings.IsReady || !TCGUI.IsReady)
-                yield return null;
+        public IEnumerator Configure()
+        {            
+            while (!GlobalSettings.IsReady || !TimeControlIMGUI.IsReady)
+            {
+                yield return new WaitForSeconds( 1f );
+            }
 
-            Settings.Instance.PropertyChanged += SettingsPropertyChanged;
+            buttonTexture = GameDatabase.Instance.GetTexture( PluginAssemblyUtilities.GameDatabasePathStockToolbarIcons + "/enabled", false );
+
+            global::GameEvents.onGUIApplicationLauncherReady.Add( this.AppLauncherReady );
+            global::GameEvents.onGUIApplicationLauncherDestroyed.Add( this.AppLauncherDestroyed );
+            global::GameEvents.onLevelWasLoadedGUIReady.Add( this.AppLauncherDestroyed );
+            global::GameEvents.OnGameSettingsApplied.Add( this.OnGameSettingsApplied );
 
             if (BlizzyToolbar.ToolbarManager.ToolbarAvailable)
             {
@@ -65,72 +68,98 @@ namespace TimeControl
                 toolbarButton.Visibility = new BlizzyToolbar.GameScenesVisibility( GameScenes.FLIGHT, GameScenes.TRACKSTATION, GameScenes.SPACECENTER ); //Places where the button should show up
                 toolbarButton.OnClick += BlizzyToolbarButtonClick;
             }
-            
+
             IsReady = true;
+
+            Reset();
 
             yield break;
         }
 
         private void BlizzyToolbarButtonClick(BlizzyToolbar.ClickEvent e)
         {
-            Settings.Instance.WindowsVisible = !Settings.Instance.WindowsVisible;
+            TimeControlIMGUI.Instance.ToggleGUIVisibility();
+            Set( TimeControlIMGUI.Instance.WindowVisible );
         }
 
-        private void SettingsPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void OnGameSettingsApplied()
         {
-            if (e.PropertyName == Settings.PropertyStrings.WindowsVisible)
-            {
-                Set( Settings.Instance.WindowsVisible );
-            }
-
-            if (e.PropertyName == Settings.PropertyStrings.UseStockToolbar)
-            {
-                Reset();
-            }
+            Reset();
         }
 
         private void OnClick()
         {
             if (!IsReady)
+            {
                 return;
+            }
 
-            Settings.Instance.WindowsVisible = !Settings.Instance.WindowsVisible;
+            TimeControlIMGUI.Instance.ToggleGUIVisibility();
+            Set( TimeControlIMGUI.Instance.WindowVisible );
         }
 
         private void AppLauncherShow()
         {
             if (!IsReady)
+            {
                 return;
+            }
 
-           TCGUI.Instance.TempUnHideGUI( "StockAppLauncher" );
+            TimeControlIMGUI.Instance.TempUnHideGUI( "StockAppLauncher" );
         }
         private void AppLancherHide()
         {
             if (!IsReady)
+            {
                 return;
-
-            TCGUI.Instance.TempHideGUI( "StockAppLauncher" );
+            }
+            TimeControlIMGUI.Instance.TempHideGUI( "StockAppLauncher" );
         }
 
-        private void AppLauncherReady() { if (!StockToolbarEnabled) return; Init(); }
-        private void AppLauncherDestroyed(GameScenes gameScene) { if (HighLogic.LoadedSceneIsGame) return; Destroy(); }
-        private void AppLauncherDestroyed() { Destroy(); }
+        private void AppLauncherReady()
+        {
+            if (!StockToolbarEnabled)
+            {
+                return;
+            }
+
+            Init();
+        }
+        private void AppLauncherDestroyed(GameScenes gameScene)
+        {
+            if (HighLogic.LoadedSceneIsGame)
+            {
+                return;
+            }
+
+            Destroy();
+        }
+        private void AppLauncherDestroyed()
+        {
+            Destroy();
+        }
 
         private void OnDestroy()
         {
-            GameEvents.onGUIApplicationLauncherReady.Remove( AppLauncherReady );
-            GameEvents.onGUIApplicationLauncherDestroyed.Remove( AppLauncherDestroyed );
-            GameEvents.onLevelWasLoadedGUIReady.Remove( AppLauncherDestroyed );
+            global::GameEvents.onGUIApplicationLauncherReady.Remove( this.AppLauncherReady );
+            global::GameEvents.onGUIApplicationLauncherDestroyed.Remove( this.AppLauncherDestroyed );
+            global::GameEvents.onLevelWasLoadedGUIReady.Remove( this.AppLauncherDestroyed );
+            global::GameEvents.OnGameSettingsApplied.Remove( this.OnGameSettingsApplied );
         }
 
         private void Init()
         {
-            if (!isAvailable || !HighLogic.LoadedSceneIsGame) return;
+            if (!AppLauncherIsAvailable || !HighLogic.LoadedSceneIsGame)
+            {
+                return;
+            }
 
             if (appLauncherButton == null)
+            {
                 appLauncherButton = ApplicationLauncher.Instance.AddModApplication( OnClick, OnClick, null, null, null, null, AppScenes, buttonTexture );
+            }
 
-            Set( Settings.Instance.WindowsVisible );
+            Set( TimeControlIMGUI.Instance.WindowVisible );
 
             ApplicationLauncher.Instance.RemoveOnHideCallback( AppLancherHide );
             ApplicationLauncher.Instance.RemoveOnShowCallback( AppLauncherShow );
@@ -152,7 +181,7 @@ namespace TimeControl
 
         internal void Set(bool SetTrue, bool force = false)
         {
-            if (!isAvailable || appLauncherButton == null)
+            if (!AppLauncherIsAvailable || appLauncherButton == null)
                 return;
 
             if (SetTrue)
@@ -188,3 +217,29 @@ namespace TimeControl
         }
     }
 }
+
+
+/*
+All code in this file Copyright(c) 2016 Nate West
+
+The MIT License (MIT)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/

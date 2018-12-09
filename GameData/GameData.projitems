@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>cbbb7888-e232-463d-b26e-49a9e510e735</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>GameData</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)TimeControl\Flags\TimeControl.png" />
+    <Content Include="$(MSBuildThisFileDirectory)TimeControl\LICENSE.md" />
+    <Content Include="$(MSBuildThisFileDirectory)TimeControl\ToolbarIcons\BlizzyToolbarIcons\disabled.png" />
+    <Content Include="$(MSBuildThisFileDirectory)TimeControl\ToolbarIcons\BlizzyToolbarIcons\enabled.png" />
+    <Content Include="$(MSBuildThisFileDirectory)TimeControl\ToolbarIcons\StockToolbarIcons\disabled.png" />
+    <Content Include="$(MSBuildThisFileDirectory)TimeControl\ToolbarIcons\StockToolbarIcons\enabled.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+    <None Include="$(MSBuildThisFileDirectory)TimeControl\CHANGELOG.md" />
+    <None Include="$(MSBuildThisFileDirectory)TimeControl\README.md" />
+    <None Include="$(MSBuildThisFileDirectory)TimeControl\TimeControl.version" />
+  </ItemGroup>
+</Project>
