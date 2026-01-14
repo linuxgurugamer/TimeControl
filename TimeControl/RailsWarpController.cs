@@ -128,7 +128,11 @@ namespace TimeControl
                         && (Mathf.Approximately( TimeController.Instance?.TimeScale ?? 1f, 1f ) || TimeController.Instance.IsTimeControlPaused)
                         && TimeWarp.fetch != null;
                 }
-                else
+                //else if (HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedScene == GameScenes.TRACKSTATION)
+                //{
+                //    return (Mathf.Approximately( TimeController.Instance?.TimeScale ?? 1f, 1f ) || TimeController.Instance.IsTimeControlPaused)
+                //        && TimeWarp.fetch != null;
+                //}
                 {
                     return false;
                 }
@@ -265,10 +269,10 @@ namespace TimeControl
         }
 
         /// <summary>
-        /// Returns a copy of the default altitude limits for a specific celestial body
+        /// Returns a copy of the custom altitude limits for a specific celestial body
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="cb"/> is null</exception>
-        /// <exception cref="InvalidOperationException">Thrown when default altitude limits are not currently cached or <paramref name="cb"/> doesn't exist in the list</exception>
+        /// <exception cref="InvalidOperationException">Thrown when custom altitude limits are not currently cached or <paramref name="cb"/> doesn't exist in the list</exception>
         public List<float> GetCustomAltitudeLimitsForBody(CelestialBody cb)
         {
             const string logBlockName = nameof( RailsWarpController ) + "." + nameof( GetCustomAltitudeLimitsForBody );
@@ -391,7 +395,9 @@ namespace TimeControl
                 Load();
 
                 ExecRateUpdateAndSave();
-                
+
+                CanRailsWarp = true;
+
                 GameEvents.onTimeWarpRateChanged.Add( onTimeWarpRateChanged );
 
                 Log.Info( nameof( RailsWarpController ) + " is Ready!", logBlockName );
@@ -1213,157 +1219,26 @@ namespace TimeControl
             }
         }
 
-        public bool RailsWarpForXOrbits(double orbitCount, Vessel v)
+        public void ActivateMaxRails()
         {
-            const string logBlockName = nameof( RailsWarpController ) + "." + nameof( RailsWarpForXOrbits );
+            const string logBlockName = nameof( RailsWarpController ) + "." + nameof( ActivateMaxRails );
             using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
             {
-                if (v == null)
+                ThrowExceptionIfNotReady( logBlockName );
+
+                DeactivateRails();
+
+                if (HighLogic.LoadedSceneIsFlight)
                 {
-                    Log.Error( "Vessel parameter cannot be null!", logBlockName );
-                    throw new ArgumentNullException( nameof( v ) );
+                    Log.Info( "Setting warp rate to current max for vessel altitude limit over this celestial body.", logBlockName );
+                    
                 }
-                if (v.orbit == null)
+                else
                 {
-                    Log.Warning( "Vessel has no orbit!", logBlockName );
-                    return false;
+                    Log.Info( "Setting warp rate to max.", logBlockName );
                 }
 
-                if (UnstableOrbitTransitions.Contains(v.orbit.patchEndTransition) || v.Landed)
-                {
-                    Log.Warning( "Vessel does not have a stable orbit.", logBlockName );
-                    return false;
-                }
-                
-                double targetUT = CurrentUT + (v.orbit.period * orbitCount);
-                return RailsWarpToUT( targetUT );
-            }
-        }
-
-        public bool RailsWarpToSOITransistion(double secondsPrior, Vessel v)
-        {
-            const string logBlockName = nameof( RailsWarpController ) + "." + nameof( RailsWarpToSOITransistion );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
-            {
-                if (v == null)
-                {
-                    Log.Error( "Vessel parameter cannot be null!", logBlockName );
-                    throw new ArgumentNullException( nameof( v ) );
-                }
-                if (v.orbit == null)
-                {
-                    Log.Warning( "Vessel has no orbit!", logBlockName );
-                    return false;
-                }
-
-                if (!SOITransitions.Contains( v.orbit.patchEndTransition ))
-                {
-                    Log.Warning( "Vessel does not have an SOI Transistion.", logBlockName );
-                    return false;
-                }
-
-                double targetUT = v.orbit.EndUT - secondsPrior;
-                return RailsWarpToUT( targetUT );
-            }
-        }
-
-        public bool RailsWarpToNextManuverNode(double secondsPrior, Vessel v)
-        {
-            const string logBlockName = nameof( RailsWarpController ) + "." + nameof( RailsWarpToNextManuverNode );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
-            {
-                if (v == null)
-                {
-                    Log.Error( "Vessel parameter cannot be null!", logBlockName );
-                    throw new ArgumentNullException( nameof( v ) );
-                }
-                if (v.orbit == null)
-                {
-                    Log.Warning( "Vessel has no orbit!", logBlockName );
-                    return false;
-                }
-
-                if (! ( (v.patchedConicSolver?.maneuverNodes?.Count ?? 0) > 0 ) )
-                {
-                    Log.Warning( "Vessel does not have a manuver node.", logBlockName );
-                    return false;
-                }
-
-                double currentUT = this.CurrentUT;
-                
-                var nodes = v.patchedConicSolver.maneuverNodes.Where( f => f.UT >= currentUT );
-
-                if (nodes == null || nodes.Count() == 0)
-                {
-                    Log.Warning( "Vessel does not have a manuver node in the future.", logBlockName );
-                    return false;
-                }
-
-                ManeuverNode m = nodes.First();
-                double remaining = m.UT - currentUT;
-                
-                if (remaining <= secondsPrior)
-                {
-                    Log.Warning( "Nearest node is too close to the current time.", logBlockName );
-                    return false;
-                }
-
-                double targetUT = m.UT - secondsPrior;
-                return RailsWarpToUT( targetUT );
-            }
-        }
-
-        public bool RailsWarpToAP(double secondsPrior, Vessel v)
-        {
-            const string logBlockName = nameof( RailsWarpController ) + "." + nameof( RailsWarpForXOrbits );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
-            {
-                if (v == null)
-                {
-                    Log.Error( "Vessel parameter cannot be null!", logBlockName );
-                    throw new ArgumentNullException( nameof( v ) );
-                }
-                if (v.orbit == null)
-                {
-                    Log.Warning( "Vessel has no orbit!", logBlockName );
-                    return false;
-                }
-                
-                if (v.orbit.timeToAp <= 0 || (CurrentUT + v.orbit.timeToAp > v.orbit.EndUT))
-                {
-                    Log.Warning( "Vessel has no valid future AP!", logBlockName );
-                    return false;
-                }
-                
-                double targetUT = (CurrentUT + v.orbit.timeToAp) - secondsPrior;
-                return RailsWarpToUT( targetUT );
-            }
-        }
-
-        public bool RailsWarpToPE(double secondsPrior, Vessel v)
-        {
-            const string logBlockName = nameof( RailsWarpController ) + "." + nameof( RailsWarpForXOrbits );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
-            {
-                if (v == null)
-                {
-                    Log.Error( "Vessel parameter cannot be null!", logBlockName );
-                    throw new ArgumentNullException( nameof( v ) );
-                }
-                if (v.orbit == null)
-                {
-                    Log.Warning( "Vessel has no orbit!", logBlockName );
-                    return false;
-                }
-                
-                if (v.orbit.timeToPe <= 0 || (CurrentUT + v.orbit.timeToPe > v.orbit.EndUT))
-                {
-                    Log.Warning( "Vessel has no valid future PE!", logBlockName );
-                    return false;
-                }
-
-                double targetUT = (CurrentUT + v.orbit.timeToPe) - secondsPrior;
-                return RailsWarpToUT( targetUT );
+                TimeWarp.SetRate( 0, true, false );                
             }
         }
 
@@ -1371,7 +1246,9 @@ namespace TimeControl
         {
             const string logBlockName = nameof( RailsWarpController ) + "." + nameof( RailsWarpForDuration );
             using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
-            {                
+            {
+                ThrowExceptionIfNotReady( logBlockName );
+
                 double totalSeconds = 0f;
                 if (useKerbinDaysYears)
                 {
@@ -1392,6 +1269,8 @@ namespace TimeControl
             const string logBlockName = nameof( RailsWarpController ) + "." + nameof( RailsWarpForSeconds );
             using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
             {
+                ThrowExceptionIfNotReady( logBlockName );
+
                 Log.Info( "Trying to Rails Warp for " + seconds.ToString() + " seconds", logBlockName );
                 double UT = CurrentUT + seconds;
                 return RailsWarpToUT( UT );
@@ -1403,6 +1282,9 @@ namespace TimeControl
             const string logBlockName = nameof( RailsWarpController ) + "." + nameof( RailsWarpToUT );
             using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
             {
+
+                ThrowExceptionIfNotReady( logBlockName );
+
                 Log.Info( "Trying to Rails Warp to UT " + warpTime.ToString(), logBlockName );                
                 if (!CanRailsWarp)
                 {
