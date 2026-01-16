@@ -1,4 +1,3 @@
-Add toggle to Rails windows to disable EC usage during high warp rates.  Will need to reenable when changing scenes
 
 Add toggle for stock skin (info page?)
 

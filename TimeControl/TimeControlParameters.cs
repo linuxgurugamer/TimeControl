@@ -13,16 +13,19 @@ namespace TimeControl
         public override GameParameters.GameMode GameMode { get { return GameParameters.GameMode.ANY; } }                
         public override bool HasPresets { get { return true; } }
 
-        [GameParameters.CustomParameterUI("Use Stock Toolbar", toolTip = "")]
-        public bool UseStockToolbar = true;
-        [GameParameters.CustomParameterUI("Use Blizzy Toolbar", toolTip = "")]
-        public bool UseBlizzyToolbar = true;
         [GameParameters.CustomParameterUI( "Use Kerbin Time", toolTip = "" )]
         public bool UseKerbinTime = GameSettings.KERBIN_TIME;
+
         [GameParameters.CustomParameterUI("Show Hyper-Warp Onscreen Messages", toolTip = "")]
         public bool ShowHyperOnscreenMessages = true;
+
         [GameParameters.CustomParameterUI( "Show Slow-Motion Onscreen Messages", toolTip = "" )]
         public bool ShowSlowMoOnscreenMessages = true;
+
+        [GameParameters.CustomParameterUI("Show Infinite EC Onscreen Messages", toolTip = "")]
+        public bool ShowECOnscreenMessages = true;
+
+
         [GameParameters.CustomParameterUI( "Camera Zoom Fix", toolTip = "" )]
         public bool CameraZoomFix = true;
 

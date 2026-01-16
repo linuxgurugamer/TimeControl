@@ -96,13 +96,15 @@ namespace TimeControl
             {
                 CheatOptions.InfiniteElectricity = false;
                 RailsWarpController.Instance.autoDisable = false;
-                ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
+                if (HyperWarpController.Instance.ShowInfiniteECScreenMessageOn)
+                    ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
             }
             if (RailsWarpController.Instance != null && RailsWarpController.Instance.autoDisable)
             {
                 CheatOptions.InfiniteElectricity = false;
                 RailsWarpController.Instance.autoDisable = false;
-                ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
+                if (HyperWarpController.Instance.ShowInfiniteECScreenMessageOn)
+                    ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
             }
 
         }

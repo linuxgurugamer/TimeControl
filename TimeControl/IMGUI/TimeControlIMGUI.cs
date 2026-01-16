@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using ClickThroughFix;
+
 namespace TimeControl
 {
     [KSPAddon(KSPAddon.Startup.Instantly, true)]
@@ -313,7 +315,8 @@ namespace TimeControl
                 {
                     CheatOptions.InfiniteElectricity = false;
                     RailsWarpController.Instance.autoDisable = false;
-                    ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
+                    if (HyperWarpController.Instance.ShowInfiniteECScreenMessageOn)
+                        ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
                 }
 
             }
@@ -418,7 +421,7 @@ namespace TimeControl
 
         private void OnGUIWindow()
         {
-            windowRect = GUILayout.Window(tcsWindowHashCode, windowRect, MainGUI, "Time Control");
+            windowRect = ClickThruBlocker.GUILayoutWindow(tcsWindowHashCode, windowRect, MainGUI, "Time Control");
             windowRect.ClampToScreen();
 
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)

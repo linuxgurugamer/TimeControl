@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeControlTesting", "TimeControlTesting\TimeControlTesting.csproj", "{F8B31E00-026B-46BD-9660-DD3793B2786F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{35AEE226-1A0A-4008-AF68-39E9EC55173B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35AEE226-1A0A-4008-AF68-39E9EC55173B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35AEE226-1A0A-4008-AF68-39E9EC55173B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8B31E00-026B-46BD-9660-DD3793B2786F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8B31E00-026B-46BD-9660-DD3793B2786F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8B31E00-026B-46BD-9660-DD3793B2786F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8B31E00-026B-46BD-9660-DD3793B2786F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

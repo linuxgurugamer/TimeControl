@@ -11,13 +11,13 @@
         internal static readonly string MOD = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 
         //internal static readonly string PathApp = KSPUtil.ApplicationRootPath.Replace( "\\", "/" );
-        internal static readonly string PathPlugin = System.IO.Path.GetDirectoryName( System.Reflection.Assembly.GetExecutingAssembly().Location ).Replace( "\\", "/" );
-        internal static readonly string PathPluginData = string.Format( "{0}/PluginData", PathPlugin );
-        
-        internal static readonly string GameDatabasePathStockToolbarIcons = string.Format( "{0}/ToolbarIcons/StockToolbarIcons", MOD );
-        internal static readonly string GameDatabasePathBlizzyToolbarIcons = string.Format( "{0}/ToolbarIcons/BlizzyToolbarIcons", MOD );
-        
-        internal static readonly string settingsFilePath = string.Format( "{0}/settings.cfg", PathPluginData );
+        internal static readonly string PathPlugin = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location).Replace("\\", "/");
+        internal static readonly string PathPluginData = string.Format("{0}/PluginData", PathPlugin);
+
+        internal static readonly string GameDatabasePathStockToolbarIcons = string.Format( "{0}/ToolbarIcons/StockToolbarIcons", MOD);
+        internal static readonly string GameDatabasePathBlizzyToolbarIcons = string.Format("{0}/ToolbarIcons/BlizzyToolbarIcons", MOD);
+
+        internal static readonly string settingsFilePath = string.Format("{0}/settings.cfg", PathPluginData);
 
         //internal static readonly string PathTextures = string.Format( "{0}/Textures", PathPlugin );
         //internal static readonly string GameDatabasePathTextures = string.Format( "{0}/Textures", MOD );

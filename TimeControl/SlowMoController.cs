@@ -25,8 +25,8 @@ namespace TimeControl
 
         private ScreenMessage defaultScreenMessage;
         private ScreenMessage currentScreenMessage;
-        
-        
+
+
         private bool ShowOnscreenMessages
         {
             get => HighLogic.CurrentGame?.Parameters?.CustomParams<TimeControlParameterNode>()?.ShowSlowMoOnscreenMessages ?? true;
@@ -37,12 +37,12 @@ namespace TimeControl
             get => PerformanceManager.IsReady && (PerformanceManager.Instance?.PerformanceCountersOn ?? false);
         }
 
+#if false
         private bool CurrentScreenMessageOn
         {
             get => currentScreenMessage != null && (ScreenMessages.Instance?.ActiveMessages?.Contains( currentScreenMessage ) ?? false);
         }
-        
-        
+#endif
 
         /// <summary>
         /// 

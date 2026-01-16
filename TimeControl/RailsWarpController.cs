@@ -445,7 +445,8 @@ namespace TimeControl
                         {
                             CheatOptions.InfiniteElectricity = true;
                             autoDisable = true;
-                            ScreenMessages.PostScreenMessage("Disabling EC Usage", 5);
+                            if (HyperWarpController.Instance.ShowInfiniteECScreenMessageOn)
+                                ScreenMessages.PostScreenMessage("Disabling EC Usage", 5);
                         }
                     }
                     else
@@ -454,7 +455,8 @@ namespace TimeControl
                         {
                             CheatOptions.InfiniteElectricity = false;
                             autoDisable = false;
-                            ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
+                            if (HyperWarpController.Instance.ShowInfiniteECScreenMessageOn)
+                                ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
                         }
                     }
                 }

@@ -85,7 +85,7 @@ namespace TimeControl
         private ScreenMessageStyle currentScreenMessageStyle = ScreenMessageStyle.UPPER_CENTER;
         private float currentScreenMessageDuration = Mathf.Infinity;
         private string currentScreenMessagePrefix = "HYPER-WARP";
-        
+
         private List<ScreenMessage> HyperWarpMessagesCache = new List<ScreenMessage>();
 
         private FlightCamera cam;
@@ -99,6 +99,12 @@ namespace TimeControl
         {
             get => Planetarium.GetUniversalTime();
         }
+
+        internal bool ShowInfiniteECScreenMessageOn
+        {
+            get => HighLogic.CurrentGame?.Parameters?.CustomParams<TimeControlParameterNode>()?.ShowECOnscreenMessages ?? true;
+        }
+
 
         private bool ShowOnscreenMessages
         {
@@ -505,7 +511,8 @@ namespace TimeControl
                 {
                     CheatOptions.InfiniteElectricity = false;
                     RailsWarpController.Instance.autoDisable = false;
-                    ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
+                    if (ShowInfiniteECScreenMessageOn)
+                        ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
                 }
 
             }
