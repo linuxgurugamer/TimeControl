@@ -1,8 +1,8 @@
 {
   "NAME": "TimeControl",
-  "URL": "http://ksp-avc.cybutek.net/version.php?id=310",
-  "DOWNLOAD": "https://github.com/ntwest/TimeControl/releases",
-  "CHANGE_LOG_URL": "https://github.com/ntwest/TimeControl/blob/master/CHANGELOG.md",
+  "URL": "https://raw.githubusercontent.com/linuxgurugamer/TimeControl/refs/heads/master/TimeControl.version",
+  "DOWNLOAD": "https://github.com/linuxgurugamer/TimeControl/releases",
+  "CHANGE_LOG_URL": "https://github.com/linuxgurugamer/TimeControl/blob/master/CHANGELOG.md",
   "VERSION": {
     "MAJOR": 2,
     "MINOR": 12,
