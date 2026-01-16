@@ -1,0 +1,166 @@
+Changelog
+
+2.12.0 (unreleased)
+	Adoption by Linuxgurugamer
+	Compiled complete list of changes and added to changelog
+	Added tooltips to buttons in top bar 
+	Added option to enable infinite EC when timewarp gets too high
+
+2.11.0
+	Recompile for KSP 1.12
+
+2.10
+	Recompile for KSP 1.10.1.
+	Also includes new hyper warp presets, allowing you to change hyper rate and physics rate to a predefined set of choices, much like rails warp.
+
+2.9.9
+	Version 2.9.9 (KSP 1.9.1)
+	Added new Hyper Warping feature that works in a "Stockalike" way - a list of editable custom hyper warp rates and physics settings that can be used to slowly increase/decrease hyper warp in a controlled way
+	Added buttons & key bindings to increase/decrease hyper warp by these settings
+	Added new 'Warp to Node Start Burn Time' feature
+	Added buttons on quick and rails warp to go to the 'start burn time' (also 10 and 30 sec prior)
+	Added key binding for warping to start burn time - X seconds
+
+2.9.8
+	KSP 1.9.1 compatibility. Loosely tested.
+
+2.9.7
+	KSP 1.8.1 Support.
+
+2.9.6
+	KSP 1.6.1 Recompile
+
+2.9.5
+	KSP 1.5.1 Recompile
+	Allow warp directly from PAUSE when paused via TimeControl
+	Fix IndexOutOfRange exception on scene changes
+
+2.9.4
+KSP 1.4.5 recompile.
+
+2.9.3
+	Recompile for KSP 1.4.4
+
+2.9.2
+	Update for KSP 1.4.3
+
+2.9.1
+	KSP 1.4.2. Compatibility
+
+2.9
+	KSP 1.4.1 Compatibility
+	Removed MiniAVC (kept Version file)
+
+2.8.3
+	For KSP 1.3.1
+
+	A few bug fixes and enchancements
+
+	Automatically reset maximumDeltaTime to the PHYSICS_FRAME_DT_LIMIT after physics warp bug enhancement
+	Fixed Physics Accuracy +/- not working correctly on slider
+	Fixed Hyper-Warp/Slow Mo Screen messages do not include stats when GUI is disabled (toggle performance stats on ? screen)
+	Hyper Warp now allows you to set very high MaximumDeltaTime values that only apply during hyper warp. This will reduce your frame rate but possibly speed up Hyper Warp a little bit so long as the engine is not physics-limited
+
+2.8.2
+	Massive Keybindings update for the Discerning Gamer.
+
+	Bind nearly every TimeControl action to a hotkey or key combination. Bind multiple actions to the same set of keys e.g. (activate hyper warp + set rate to 8). Key binds for quick warp to specific times / orbit locations.
+
+	Also includes a bug fix to resource converters at high time warps using code graciously provided by @linuxgurugamer.
+
+2.8.1
+	Release for KSP 1.3.1. Fixed version file and compile issue with prior 2.8 release.
+
+2.7
+	Major Refactoring. Updated GUI, Settings, added quickwarp and warp-to tabs.
+
+	KSP 1.3 compatibility.
+
+
+2.5
+	Thanks to @linuxgurugamer for updates for KSP 1.2.2. Changed the little button to close the window instead of minimizing.
+
+	No other bugs fixed for this release.
+
+2.4
+	KSP 1.2.1 Compatibility.
+	MiniAVC removed until AVC is updated for 1.2.1.
+	Fixes bug for "Homeworld Time" breaking RSS Time Formatter. Will rethink this feature...
+
+2.3.1
+	Fix for toolbar integration due to Contract Configurator
+
+
+2.3
+	KSP 1.2 Compatibility.
+
+	New 1.2 version of MiniAVC.
+
+	Fixes bug where debris leaving the physics area causes hyper warp to cut out on current vessel.
+
+	Fixes bug where it was saving the game settings in the editor view, which was breaking editor extensions redux. Thanks to linuxgurugamer.
+
+2.2.2
+	Doh. 2.2.1 had a slow-motion bug when returning to 1x. Corrected
+
+2.2.1
+	Version 2.2.1 (KSP 1.1.3)
+
+	Bug fix: TC will no longer interfere with the stock warp to on rails.
+
+	Remove some string concatenation from the OnGUI calls
+
+2.2.0
+	Version 2.2 (KSP 1.1.3)
+
+	Logging mode now is properly set up with the settings file as well as in the Settings GUI. Defaulting to INFO mode.
+	Save warp rates, altitudes, window positions, and settings every X seconds is now in the Settings GUI as well. Defaults to 5 seconds. Note that if you have made no changes, it does not perform a save.
+	"Homeworld Timekeeping" option added. If you have modified things with Kopernicus and this is turned on, "Use Kerbin Time" will set up your calendar so that 1 day = 1 sidereal day, and 1 year = 1 sidereal year
+
+2.1.0
+Version 2.1 (KSP 1.1.3)
+
+	Screen Messages now stay on until you change warp. They can be toggled off in the settings menu.
+	Replaced label at top right of TC window with a button that cancels the warp type as well as cancelling PAUSE.
+	Auto Rails Warp now uses custom code, it appears to be very accurate.
+	Auto Rails warp now has the ability to pause when you reach the time requested.
+	Rails warp when you first go to the flight window now uses the correct warp rates.
+	Logging mode now is properly set up with the settings file. Defaulting to INFO mode.
+	Corrected issue when changing a scene, if you had time paused, it would break the game.
+
+2.0.2
+KSP 1.1.3 compatibility.
+
+	Major rewrite. See change log for details.
+	Version numbering updated.
+
+1.1.2
+	It seems like Hyper Warp performs loads better in KSP 1.1.2!
+
+	This still needs a UI rewrite. Anyone with skills in unity canvas UI that can help me I'd be grateful.
+
+	I removed the calls to the object collision code. I tested in low orbit at super high warp and I got 180 days in 10 seconds with no blow ups when returning to normal speed.
+
+1.0.5
+	Recompile for 1.0.5.
+
+	Still has the bug where if you leave Kerbin's SOI in a vessel and then return to the space center you can't click on space center stuff. Switch to a vessel in kerbin orbit before returning to get around it.
+
+	Hope to rebuild for Unity 5 KSP.
+
+1.0.4 HF 2
+	Fixes the log spam with a configurable setting to turn off debug logging. Logging is disabled by default
+
+1.0.4 hotfix
+	Same as last release just corrected the app launcher button
+
+1.0.4
+	Fixed black screen after switching SOI (PQSCity objects were never re-activated from the bugfix for the explosions).
+
+	Fixed mixed references to CelestialBody.bodyName and CelestialBody.name (should fix RSS issues).
+
+	I think the input locks not working right has been corrected as well
+
+1.0.2
+	Use atmosphereDepth
+

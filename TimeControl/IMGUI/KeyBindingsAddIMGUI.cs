@@ -64,7 +64,7 @@ namespace TimeControl
             bool guiPriorEnabled = GUI.enabled;
             Color guiPriorColor = GUI.contentColor;
 
-            GUILayout.BeginHorizontal();
+                        using (new GUILayout.HorizontalScope())
             {
                 if (kb is TimeControlKeyBindingValue tckbv)
                 {
@@ -87,7 +87,7 @@ namespace TimeControl
                     return true;
                 }
             }
-            GUILayout.EndHorizontal();
+            
 
             GUI.contentColor = guiPriorColor;
             GUI.enabled = guiPriorEnabled;

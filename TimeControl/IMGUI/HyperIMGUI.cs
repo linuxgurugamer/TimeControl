@@ -10,11 +10,11 @@ namespace TimeControl
         private string hyperWarpMinutes = "0";
         private string hyperWarpSeconds = "0";
 
-        private List<float> maxDeltaButtons = new List<float>() { 0.02f, 0.08f, 0.2f };
-        private List<float> maxRateButtons = new List<float>() { 5, 10, 20, 50 };
-        private List<float> phyAccuracyButtons = new List<float>() { 1, 3, 6 };
+        private readonly List<float> maxDeltaButtons = new List<float>() { 0.02f, 0.08f, 0.2f };
+        private readonly List<float> maxRateButtons = new List<float>() { 5, 10, 20, 50 };
+        private readonly List<float> phyAccuracyButtons = new List<float>() { 1, 3, 6 };
 
-        SharedIMGUI sharedGUI;
+        readonly SharedIMGUI sharedGUI;
 
         public HyperIMGUI()
         {
@@ -32,50 +32,49 @@ namespace TimeControl
             GUI.enabled = priorGUIEnabled && HyperWarpController.Instance.CanHyperWarp;
 
             {
-                GUILayout.BeginVertical();
+                using (new GUILayout.VerticalScope())
                 {
                     GUIRateButtons();
                     GUIMaxRate();
                     GUIMinPhys();
                     GUIMaxDelta();
                     GUIButtons();
-                    GUILayout.Label( "", GUILayout.Height( 5 ) );
+                    GUILayout.Label("", GUILayout.Height(5));
                     GUIWarpTime();
-                    GUILayout.Label( "", GUILayout.Height( 5 ) );
+                    GUILayout.Label("", GUILayout.Height(5));
                     sharedGUI.GUIThrottleControl();
                 }
-                GUILayout.EndVertical();
             }
             GUI.enabled = priorGUIEnabled;
         }
 
         private void GUIRateButtons()
         {
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
-                GUILayout.Label( "Predefined Rates" );
+                GUILayout.Label("Predefined Rates");
 
-                if (GUILayout.Button( "-" , GUILayout.Width( 20 ) ) )
+                if (GUILayout.Button("-", GUILayout.Width(20)))
                 {
                     HyperWarpController.Instance.ChangeToLowerRate();
                 }
-            
-                if (GUILayout.Button( "+", GUILayout.Width( 20 ) ) )
-                { 
+
+                if (GUILayout.Button("+", GUILayout.Width(20)))
+                {
                     HyperWarpController.Instance.ChangeToHigherRate();
-                }                
+                }
             }
-            GUILayout.EndHorizontal();
+
         }
 
         private void GUIMaxRate()
         {
-            string hyperMaxRateLabel = "Attempted Rate: ".MemoizedConcat( Mathf.Round( HyperWarpController.Instance.MaxAttemptedRate ).MemoizedToString() );
+            string hyperMaxRateLabel = "Attempted Rate: ".MemoizedConcat(Mathf.Round(HyperWarpController.Instance.MaxAttemptedRate).MemoizedToString());
             Action<float> updateHyperMaxRate = delegate (float f) { HyperWarpController.Instance.MaxAttemptedRate = f; };
             // Force slider to select integer values between min and max
-            Func<float, float> modifyFieldHyperMaxRate = delegate (float f) { return Mathf.Round( f ); };
+            Func<float, float> modifyFieldHyperMaxRate = delegate (float f) { return Mathf.Round(f); };
 
-            IMGUIExtensions.floatTextBoxSliderPlusMinusWithButtonList( hyperMaxRateLabel, HyperWarpController.Instance.MaxAttemptedRate, HyperWarpController.AttemptedRateMin, HyperWarpController.AttemptedRateMax, 1f, updateHyperMaxRate, maxRateButtons, modifyFieldHyperMaxRate );
+            IMGUIExtensions.floatTextBoxSliderPlusMinusWithButtonList(hyperMaxRateLabel, HyperWarpController.Instance.MaxAttemptedRate, HyperWarpController.AttemptedRateMin, HyperWarpController.AttemptedRateMax, 1f, updateHyperMaxRate, maxRateButtons, modifyFieldHyperMaxRate);
         }
 
 
@@ -83,11 +82,11 @@ namespace TimeControl
         {
             const float physIncrement = 0.1f;
 
-            string hyperMinPhysLabel = "Physics Accuracy: ".MemoizedConcat( HyperWarpController.Instance.PhysicsAccuracy.MemoizedToString() );
+            string hyperMinPhysLabel = "Physics Accuracy: ".MemoizedConcat(HyperWarpController.Instance.PhysicsAccuracy.MemoizedToString());
 
             if (HyperWarpController.Instance.PhysicsAccuracy > 4f)
             {
-                hyperMinPhysLabel = hyperMinPhysLabel.MemoizedConcat( " !!! DANGER !!!" );
+                hyperMinPhysLabel = hyperMinPhysLabel.MemoizedConcat(" !!! DANGER !!!");
             }
 
             Action<float> updatehyperMinPhys = delegate (float f)
@@ -95,74 +94,74 @@ namespace TimeControl
                 HyperWarpController.Instance.PhysicsAccuracy = f;
             };
 
-            Func<float, float> modifyFieldMinPhys = delegate (float f) { return Mathf.Round( f * (1f / physIncrement) ) / (1f / physIncrement); };
+            Func<float, float> modifyFieldMinPhys = delegate (float f) { return Mathf.Round(f * (1f / physIncrement)) / (1f / physIncrement); };
 
-            IMGUIExtensions.floatTextBoxSliderPlusMinusWithButtonList( hyperMinPhysLabel, HyperWarpController.Instance.PhysicsAccuracy, HyperWarpController.PhysicsAccuracyMin, HyperWarpController.PhysicsAccuracyMax, physIncrement, updatehyperMinPhys, phyAccuracyButtons, modifyFieldMinPhys );
+            IMGUIExtensions.floatTextBoxSliderPlusMinusWithButtonList(hyperMinPhysLabel, HyperWarpController.Instance.PhysicsAccuracy, HyperWarpController.PhysicsAccuracyMin, HyperWarpController.PhysicsAccuracyMax, physIncrement, updatehyperMinPhys, phyAccuracyButtons, modifyFieldMinPhys);
         }
 
         private void GUIMaxDelta()
         {
             const float deltaIncrement = 0.01f;
 
-            string hyperMaxRateLabel = "Max Delta Time During Hyper-Warp: ".MemoizedConcat( HyperWarpController.Instance.MaximumDeltaTime.MemoizedToString() );
+            string hyperMaxRateLabel = "Max Delta Time During Hyper-Warp: ".MemoizedConcat(HyperWarpController.Instance.MaximumDeltaTime.MemoizedToString());
 
             if (HyperWarpController.Instance.MaximumDeltaTime > 0.12f)
             {
-                hyperMaxRateLabel = hyperMaxRateLabel.MemoizedConcat( " - Low FPS Likely" );
+                hyperMaxRateLabel = hyperMaxRateLabel.MemoizedConcat(" - Low FPS Likely");
             }
 
             Action<float> updateHyperMaxDelta = delegate (float f) { HyperWarpController.Instance.MaximumDeltaTime = f; };
             // Force slider to select integer values between min and max
-            Func<float, float> modifyFieldHyperMaxDelta = delegate (float f) { return Mathf.Round( f * (1f / deltaIncrement) ) / (1f / deltaIncrement); };
+            Func<float, float> modifyFieldHyperMaxDelta = delegate (float f) { return Mathf.Round(f * (1f / deltaIncrement)) / (1f / deltaIncrement); };
 
-            IMGUIExtensions.floatTextBoxSliderPlusMinus( hyperMaxRateLabel, HyperWarpController.Instance.MaximumDeltaTime, TimeController.MaximumDeltaTimeMin, TimeController.MaximumDeltaTimeMax, deltaIncrement, updateHyperMaxDelta, modifyFieldHyperMaxDelta );
+            IMGUIExtensions.floatTextBoxSliderPlusMinus(hyperMaxRateLabel, HyperWarpController.Instance.MaximumDeltaTime, TimeController.MaximumDeltaTimeMin, TimeController.MaximumDeltaTimeMax, deltaIncrement, updateHyperMaxDelta, modifyFieldHyperMaxDelta);
         }
 
         private void GUIButtons()
         {
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
                 if (!HyperWarpController.Instance.IsHyperWarping)
                 {
-                    if (GUILayout.Button( "HyperWarp" ))
+                    if (GUILayout.Button("HyperWarp"))
                     {
                         HyperWarpController.Instance.ToggleHyper();
                     }
                 }
                 else
                 {
-                    if (GUILayout.Button( "End HyperWarp" ))
+                    if (GUILayout.Button("End HyperWarp"))
                     {
                         HyperWarpController.Instance.DeactivateHyper();
                     }
                 }
             }
-            GUILayout.EndHorizontal();
+
         }
 
         private void GUIWarpTime()
         {
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
-                GUILayout.Label( "Timed Warp:" );
-                hyperWarpHours = GUILayout.TextField( hyperWarpHours, GUILayout.Width( 35 ) );
-                GUILayout.Label( "h " );
-                hyperWarpMinutes = GUILayout.TextField( hyperWarpMinutes, GUILayout.Width( 35 ) );
-                GUILayout.Label( "m " );
-                hyperWarpSeconds = GUILayout.TextField( hyperWarpSeconds, GUILayout.Width( 35 ) );
-                GUILayout.Label( "s" );
+                GUILayout.Label("Timed Warp:");
+                hyperWarpHours = GUILayout.TextField(hyperWarpHours, GUILayout.Width(35));
+                GUILayout.Label("h ");
+                hyperWarpMinutes = GUILayout.TextField(hyperWarpMinutes, GUILayout.Width(35));
+                GUILayout.Label("m ");
+                hyperWarpSeconds = GUILayout.TextField(hyperWarpSeconds, GUILayout.Width(35));
+                GUILayout.Label("s");
             }
-            GUILayout.EndHorizontal();
 
-            HyperWarpController.Instance.HyperPauseOnTimeReached = GUILayout.Toggle( HyperWarpController.Instance.HyperPauseOnTimeReached, "Pause on time reached" );
 
-            if (GUILayout.Button( "Timed Warp" ))
+            HyperWarpController.Instance.HyperPauseOnTimeReached = GUILayout.Toggle(HyperWarpController.Instance.HyperPauseOnTimeReached, "Pause on time reached");
+
+            if (GUILayout.Button("Timed Warp"))
             {
-                int hrs = int.TryParse( hyperWarpHours, out hrs ) ? hrs : -1;
-                int min = int.TryParse( hyperWarpMinutes, out min ) ? min : -1;
-                int sec = int.TryParse( hyperWarpSeconds, out sec ) ? sec : -1;
+                int hrs = int.TryParse(hyperWarpHours, out hrs) ? hrs : -1;
+                int min = int.TryParse(hyperWarpMinutes, out min) ? min : -1;
+                int sec = int.TryParse(hyperWarpSeconds, out sec) ? sec : -1;
 
-                bool result = HyperWarpController.Instance.HyperWarpForDuration( hrs, min, sec );
+                bool result = HyperWarpController.Instance.HyperWarpForDuration(hrs, min, sec);
                 if (result)
                 {
                     hyperWarpHours = "0";

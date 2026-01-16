@@ -52,22 +52,22 @@ namespace TimeControl
         {
             TargetUT = Planetarium.GetUniversalTime();
 
-            GameEvents.onPlanetariumTargetChanged.Add( onPlanetariumTargetChanged );
-            GameEvents.onVesselLoaded.Add( onVesselLoaded );
-            GameEvents.onVesselSOIChanged.Add( onVesselSOIChanged );
-            GameEvents.onVesselSwitching.Add( onVesselSwitching );
-            GameEvents.onVesselChange.Add( onVesselChange );
-            GameEvents.onLevelWasLoaded.Add( onLevelWasLoaded );
+            GameEvents.onPlanetariumTargetChanged.Add(onPlanetariumTargetChanged);
+            GameEvents.onVesselLoaded.Add(onVesselLoaded);
+            GameEvents.onVesselSOIChanged.Add(onVesselSOIChanged);
+            GameEvents.onVesselSwitching.Add(onVesselSwitching);
+            GameEvents.onVesselChange.Add(onVesselChange);
+            GameEvents.onLevelWasLoaded.Add(onLevelWasLoaded);
         }
 
         ~RailsWarpToIMGUI()
         {
-            GameEvents.onPlanetariumTargetChanged.Remove( onPlanetariumTargetChanged );
-            GameEvents.onVesselLoaded.Remove( onVesselLoaded );
-            GameEvents.onVesselSOIChanged.Remove( onVesselSOIChanged );
-            GameEvents.onVesselSwitching.Remove( onVesselSwitching );
-            GameEvents.onVesselChange.Remove( onVesselChange );
-            GameEvents.onLevelWasLoaded.Add( onLevelWasLoaded );
+            GameEvents.onPlanetariumTargetChanged.Remove(onPlanetariumTargetChanged);
+            GameEvents.onVesselLoaded.Remove(onVesselLoaded);
+            GameEvents.onVesselSOIChanged.Remove(onVesselSOIChanged);
+            GameEvents.onVesselSwitching.Remove(onVesselSwitching);
+            GameEvents.onVesselChange.Remove(onVesselChange);
+            GameEvents.onLevelWasLoaded.Add(onLevelWasLoaded);
         }
 
         private void onPlanetariumTargetChanged(MapObject m)
@@ -140,7 +140,7 @@ namespace TimeControl
 
         private void GUIBreak()
         {
-            GUILayout.Label( "", GUILayout.Height( 5 ) );
+            GUILayout.Label("", GUILayout.Height(5));
         }
 
         public void WarpToGUI()
@@ -152,7 +152,7 @@ namespace TimeControl
 
             bool priorEnabled = GUI.enabled;
 
-            GUILayout.BeginVertical();
+            using (new GUILayout.VerticalScope())
             {
                 GUIHeader();
 
@@ -168,7 +168,6 @@ namespace TimeControl
 
                 GUINextKAC();
             }
-            GUILayout.EndVertical();
 
             GUI.enabled = priorEnabled;
         }
@@ -178,11 +177,11 @@ namespace TimeControl
         /// </summary>
         private void GUIHeader()
         {
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
-                RailsWarpController.Instance.RailsPauseOnUTReached = GUILayout.Toggle( RailsWarpController.Instance.RailsPauseOnUTReached, "Pause on Time Reached" );
+                RailsWarpController.Instance.RailsPauseOnUTReached = GUILayout.Toggle(RailsWarpController.Instance.RailsPauseOnUTReached, "Pause on Time Reached");
             }
-            GUILayout.EndHorizontal();
+
 
             GUIBreak();
         }
@@ -192,29 +191,29 @@ namespace TimeControl
         /// </summary>
         private void GUITargetUT()
         {
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
-                GUILayout.Label( "Target UT:" );
-                targetUTtextfield = GUILayout.TextField( targetUTtextfield, GUILayout.Width( 120 ) );
-                if (double.TryParse( targetUTtextfield, out double newTargetUT ) && TargetUT != newTargetUT)
+                GUILayout.Label("Target UT:");
+                targetUTtextfield = GUILayout.TextField(targetUTtextfield, GUILayout.Width(120));
+                if (double.TryParse(targetUTtextfield, out double newTargetUT) && TargetUT != newTargetUT)
                 {
                     TargetUT = newTargetUT;
                 }
 
-                if (GUILayout.Button( "Warp To", GUILayout.Width( 80 ) ))
+                if (GUILayout.Button("Warp To", GUILayout.Width(80)))
                 {
                     if (TargetUT > this.CurrentUT)
                     {
-                        RailsWarpController.Instance.RailsWarpToUT( TargetUT );
+                        RailsWarpController.Instance.RailsWarpToUT(TargetUT);
                     }
                 }
 
-                if (GUILayout.Button( "Current UT", GUILayout.Width( 80 ) ))
+                if (GUILayout.Button("Current UT", GUILayout.Width(80)))
                 {
                     TargetUT = this.CurrentUT;
                 }
             }
-            GUILayout.EndHorizontal();
+
             GUIBreak();
         }
 
@@ -232,50 +231,50 @@ namespace TimeControl
             const int buttonWidth = 40;
             const int rightMouseButton = 1;
 
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
-                GUILayout.Label( "Seconds +/-", GUILayout.Width( labelWidth ) );
+                GUILayout.Label("Seconds +/-", GUILayout.Width(labelWidth));
 
                 foreach (int x in new List<int>() { 1, 5, 10, 15, 30, 45 })
                 {
-                    if (GUILayout.Button( x.MemoizedToString(), GUILayout.Width( buttonWidth ) ))
+                    if (GUILayout.Button(x.MemoizedToString(), GUILayout.Width(buttonWidth)))
                     {
                         CheckTargetUT();
                         TargetUT = TargetUT + (Event.current.button == rightMouseButton ? -x : x);
                     }
                 }
             }
-            GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
+
+            using (new GUILayout.HorizontalScope())
             {
-                GUILayout.Label( "Minutes +/-", GUILayout.Width( labelWidth ) );
+                GUILayout.Label("Minutes +/-", GUILayout.Width(labelWidth));
 
                 foreach (int x in new List<int>() { 1, 5, 10, 15, 30, 45 })
                 {
-                    if (GUILayout.Button( x.MemoizedToString(), GUILayout.Width( buttonWidth ) ))
+                    if (GUILayout.Button(x.MemoizedToString(), GUILayout.Width(buttonWidth)))
                     {
                         CheckTargetUT();
                         if (GameSettings.KERBIN_TIME)
                         {
-                            TargetUT = TargetUT + ((Event.current.button == rightMouseButton ? -x : x) * CurrentDTF.Minute);
+                            TargetUT += ((Event.current.button == rightMouseButton ? -x : x) * CurrentDTF.Minute);
                         }
                         else
                         {
-                            TargetUT = TargetUT + ((Event.current.button == rightMouseButton ? -x : x) * 60);
+                            TargetUT += ((Event.current.button == rightMouseButton ? -x : x) * 60);
                         }
                     }
                 }
             }
-            GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
+
+            using (new GUILayout.HorizontalScope())
             {
-                GUILayout.Label( "Hours +/-", GUILayout.Width( labelWidth ) );
+                GUILayout.Label("Hours +/-", GUILayout.Width(labelWidth));
 
                 foreach (int x in new List<int>() { 1, 3, 6, 12, 18, 24 })
                 {
-                    if (GUILayout.Button( x.MemoizedToString(), GUILayout.Width( buttonWidth ) ))
+                    if (GUILayout.Button(x.MemoizedToString(), GUILayout.Width(buttonWidth)))
                     {
                         CheckTargetUT();
                         if (GameSettings.KERBIN_TIME)
@@ -289,17 +288,17 @@ namespace TimeControl
                     }
                 }
             }
-            GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
+
+            using (new GUILayout.HorizontalScope())
             {
                 if (GameSettings.KERBIN_TIME)
                 {
-                    GUILayout.Label( "K-Days +/-", GUILayout.Width( labelWidth ) );
+                    GUILayout.Label("K-Days +/-", GUILayout.Width(labelWidth));
 
                     foreach (int x in new List<int>() { 1, 5, 10, 35, 106, 425 })
                     {
-                        if (GUILayout.Button( x.MemoizedToString(), GUILayout.Width( buttonWidth ) ))
+                        if (GUILayout.Button(x.MemoizedToString(), GUILayout.Width(buttonWidth)))
                         {
                             CheckTargetUT();
                             TargetUT = TargetUT + ((Event.current.button == rightMouseButton ? -x : x) * CurrentDTF.Day);
@@ -308,11 +307,11 @@ namespace TimeControl
                 }
                 else
                 {
-                    GUILayout.Label( "E-Days +/-", GUILayout.Width( labelWidth ) );
+                    GUILayout.Label("E-Days +/-", GUILayout.Width(labelWidth));
 
                     foreach (int x in new List<int>() { 1, 5, 10, 31, 91, 365 })
                     {
-                        if (GUILayout.Button( x.MemoizedToString(), GUILayout.Width( buttonWidth ) ))
+                        if (GUILayout.Button(x.MemoizedToString(), GUILayout.Width(buttonWidth)))
                         {
                             CheckTargetUT();
                             TargetUT = TargetUT + ((Event.current.button == rightMouseButton ? -x : x) * 60 * 60 * 24);
@@ -320,17 +319,17 @@ namespace TimeControl
                     }
                 }
             }
-            GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
+
+            using (new GUILayout.HorizontalScope())
             {
                 if (GameSettings.KERBIN_TIME)
                 {
-                    GUILayout.Label( "K-Years +/-", GUILayout.Width( labelWidth ) );
+                    GUILayout.Label("K-Years +/-", GUILayout.Width(labelWidth));
 
                     foreach (int x in new List<int>() { 1, 5, 10, 20, 50, 100 })
                     {
-                        if (GUILayout.Button( x.MemoizedToString(), GUILayout.Width( buttonWidth ) ))
+                        if (GUILayout.Button(x.MemoizedToString(), GUILayout.Width(buttonWidth)))
                         {
                             CheckTargetUT();
                             TargetUT = TargetUT + ((Event.current.button == rightMouseButton ? -x : x) * CurrentDTF.Year);
@@ -339,11 +338,11 @@ namespace TimeControl
                 }
                 else
                 {
-                    GUILayout.Label( "E-Years +/-", GUILayout.Width( labelWidth ) );
+                    GUILayout.Label("E-Years +/-", GUILayout.Width(labelWidth));
 
                     foreach (int x in new List<int>() { 1, 5, 10, 20, 50, 100 })
                     {
-                        if (GUILayout.Button( x.MemoizedToString(), GUILayout.Width( buttonWidth ) ))
+                        if (GUILayout.Button(x.MemoizedToString(), GUILayout.Width(buttonWidth)))
                         {
                             CheckTargetUT();
                             TargetUT = TargetUT + ((Event.current.button == rightMouseButton ? -x : x) * 60 * 60 * 24 * 365);
@@ -351,7 +350,7 @@ namespace TimeControl
                     }
                 }
             }
-            GUILayout.EndHorizontal();
+
 
         }
 
@@ -369,38 +368,38 @@ namespace TimeControl
             Vessel v = this.currentV;
             bool vesselHasOrbit = !(v?.orbit == null || v.Landed);
 
-            GUI.enabled = priorEnabled && vesselHasOrbit && !UnstableOrbitTransitions.Contains( v.orbit.patchEndTransition );
-            GUILayout.BeginHorizontal();
+            GUI.enabled = priorEnabled && vesselHasOrbit && !UnstableOrbitTransitions.Contains(v.orbit.patchEndTransition);
+            using (new GUILayout.HorizontalScope())
             {
-                GUILayout.Label( "Orbits", GUILayout.Width( labelWidth ) );
+                GUILayout.Label("Orbits", GUILayout.Width(labelWidth));
 
                 foreach (int x in new List<int>() { 1, 2, 3, 5, 10, 50 })
                 {
-                    if (GUILayout.Button( x.MemoizedToString(), GUILayout.Width( buttonWidth ) ))
+                    if (GUILayout.Button(x.MemoizedToString(), GUILayout.Width(buttonWidth)))
                     {
                         double p = v.orbit.period * x;
                         TargetUT = CurrentUT + (Event.current.button == rightMouseButton ? -p : p);
                     }
                 }
             }
-            GUILayout.EndHorizontal();
+
             GUI.enabled = priorEnabled;
 
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
                 GUI.enabled = priorEnabled && v != null;
-                GUILayout.Label( "Vessel", GUILayout.Width( labelWidth ) );
+                GUILayout.Label("Vessel", GUILayout.Width(labelWidth));
                 GUI.enabled = priorEnabled;
 
                 GUI.enabled = priorEnabled && vesselHasOrbit && (v.orbit.ApA >= 0);
-                if (GUILayout.Button( "Ap", GUILayout.Width( buttonWidth ) ))
+                if (GUILayout.Button("Ap", GUILayout.Width(buttonWidth)))
                 {
                     TargetUT = CurrentUT + v.orbit.timeToAp;
                 }
                 GUI.enabled = priorEnabled;
 
                 GUI.enabled = priorEnabled && vesselHasOrbit && (v.orbit.PeA >= 0);
-                if (GUILayout.Button( "Pe", GUILayout.Width( buttonWidth ) ))
+                if (GUILayout.Button("Pe", GUILayout.Width(buttonWidth)))
                 {
                     TargetUT = CurrentUT + v.orbit.timeToPe;
                 }
@@ -412,100 +411,100 @@ namespace TimeControl
                 if (tgtOrbit == null)
                 {
                     GUI.enabled = priorEnabled && HighLogic.LoadedScene == GameScenes.FLIGHT && vesselHasOrbit && (v.orbit.AscendingNodeEquatorialExists());
-                    if (GUILayout.Button( "AN", GUILayout.Width( buttonWidth ) ))
+                    if (GUILayout.Button("AN", GUILayout.Width(buttonWidth)))
                     {
-                        TargetUT = v.orbit.TimeOfAscendingNodeEquatorial( CurrentUT );
+                        TargetUT = v.orbit.TimeOfAscendingNodeEquatorial(CurrentUT);
                     }
                     GUI.enabled = priorEnabled;
 
 
                     GUI.enabled = priorEnabled && HighLogic.LoadedScene == GameScenes.FLIGHT && vesselHasOrbit && (v.orbit.DescendingNodeEquatorialExists());
-                    if (GUILayout.Button( "DN", GUILayout.Width( buttonWidth ) ))
+                    if (GUILayout.Button("DN", GUILayout.Width(buttonWidth)))
                     {
-                        TargetUT = v.orbit.TimeOfDescendingNodeEquatorial( CurrentUT );
+                        TargetUT = v.orbit.TimeOfDescendingNodeEquatorial(CurrentUT);
                     }
                     GUI.enabled = priorEnabled;
                 }
                 else
                 {
-                    GUI.enabled = priorEnabled && HighLogic.LoadedScene == GameScenes.FLIGHT && vesselHasOrbit && (v.orbit.AscendingNodeExists( tgtOrbit ));
-                    if (GUILayout.Button( "AN", GUILayout.Width( buttonWidth ) ))
+                    GUI.enabled = priorEnabled && HighLogic.LoadedScene == GameScenes.FLIGHT && vesselHasOrbit && (v.orbit.AscendingNodeExists(tgtOrbit));
+                    if (GUILayout.Button("AN", GUILayout.Width(buttonWidth)))
                     {
-                        TargetUT = v.orbit.TimeOfAscendingNode( tgtOrbit, CurrentUT );
+                        TargetUT = v.orbit.TimeOfAscendingNode(tgtOrbit, CurrentUT);
                     }
                     GUI.enabled = priorEnabled;
 
 
-                    GUI.enabled = priorEnabled && HighLogic.LoadedScene == GameScenes.FLIGHT && vesselHasOrbit && (v.orbit.DescendingNodeExists( tgtOrbit ));
-                    if (GUILayout.Button( "DN", GUILayout.Width( buttonWidth ) ))
+                    GUI.enabled = priorEnabled && HighLogic.LoadedScene == GameScenes.FLIGHT && vesselHasOrbit && (v.orbit.DescendingNodeExists(tgtOrbit));
+                    if (GUILayout.Button("DN", GUILayout.Width(buttonWidth)))
                     {
-                        TargetUT = v.orbit.TimeOfDescendingNode( tgtOrbit, CurrentUT );
+                        TargetUT = v.orbit.TimeOfDescendingNode(tgtOrbit, CurrentUT);
                     }
                     GUI.enabled = priorEnabled;
                 }
 
 
-                GUI.enabled = priorEnabled && vesselHasOrbit && (SOITransitions.Contains( v.orbit.patchEndTransition ));
-                if (GUILayout.Button( "SOI", GUILayout.Width( buttonWidth ) ))
+                GUI.enabled = priorEnabled && vesselHasOrbit && (SOITransitions.Contains(v.orbit.patchEndTransition));
+                if (GUILayout.Button("SOI", GUILayout.Width(buttonWidth)))
                 {
                     TargetUT = v.orbit.EndUT;
                 }
                 GUI.enabled = priorEnabled;
             }
-            GUILayout.EndHorizontal();
 
 
-            GUILayout.BeginHorizontal();
+
+            using (new GUILayout.HorizontalScope())
             {
                 GUI.enabled = priorEnabled && v != null;
-                GUILayout.Label( "Manuver", GUILayout.Width( labelWidth ) );
+                GUILayout.Label("Manuver", GUILayout.Width(labelWidth));
                 GUI.enabled = priorEnabled;
 
-                var mn = v?.FirstUpcomingManuverNode( this.CurrentUT );
+                var mn = v?.FirstUpcomingManuverNode(this.CurrentUT);
 
                 GUI.enabled = priorEnabled && vesselHasOrbit && (mn != null);
-                if (GUILayout.Button( "Burn", GUILayout.Width( buttonWidth ) ))
+                if (GUILayout.Button("Burn", GUILayout.Width(buttonWidth)))
                 {
                     TargetUT = (CurrentUT + mn.startBurnIn);
                 }
                 GUI.enabled = priorEnabled;
 
                 GUI.enabled = priorEnabled && vesselHasOrbit && (mn != null);
-                if (GUILayout.Button( "B-10", GUILayout.Width( buttonWidth ) ))
+                if (GUILayout.Button("B-10", GUILayout.Width(buttonWidth)))
                 {
                     TargetUT = (CurrentUT + mn.startBurnIn) - 10;
                 }
                 GUI.enabled = priorEnabled;
 
                 GUI.enabled = priorEnabled && vesselHasOrbit && (mn != null);
-                if (GUILayout.Button( "B-30", GUILayout.Width( buttonWidth ) ))
+                if (GUILayout.Button("B-30", GUILayout.Width(buttonWidth)))
                 {
                     TargetUT = (CurrentUT + mn.startBurnIn) - 30;
                 }
                 GUI.enabled = priorEnabled;
 
                 GUI.enabled = priorEnabled && vesselHasOrbit && (mn != null);
-                if (GUILayout.Button( "Node", GUILayout.Width( buttonWidth ) ))
+                if (GUILayout.Button("Node", GUILayout.Width(buttonWidth)))
                 {
                     TargetUT = mn.UT;
                 }
                 GUI.enabled = priorEnabled;
 
                 GUI.enabled = priorEnabled && vesselHasOrbit && (mn != null);
-                if (GUILayout.Button( "N-10", GUILayout.Width( buttonWidth ) ))
+                if (GUILayout.Button("N-10", GUILayout.Width(buttonWidth)))
                 {
                     TargetUT = mn.UT - 10;
                 }
                 GUI.enabled = priorEnabled;
 
                 GUI.enabled = priorEnabled && vesselHasOrbit && (mn != null);
-                if (GUILayout.Button( "N-30", GUILayout.Width( buttonWidth ) ))
+                if (GUILayout.Button("N-30", GUILayout.Width(buttonWidth)))
                 {
                     TargetUT = mn.UT - 30;
                 }
                 GUI.enabled = priorEnabled;
             }
-            GUILayout.EndHorizontal();
+
 
             GUIBreak();
         }
@@ -517,28 +516,28 @@ namespace TimeControl
         {
             const int rightMouseButton = 1;
 
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
-                bool computeBtn = GUILayout.Button( "+/-", GUILayout.Width( 80 ) );
+                bool computeBtn = GUILayout.Button("+/-", GUILayout.Width(80));
 
-                warpYears = GUILayout.TextField( warpYears, GUILayout.Width( 35 ) );
-                GUILayout.Label( "y " );
-                warpDays = GUILayout.TextField( warpDays, GUILayout.Width( 35 ) );
-                GUILayout.Label( "d " );
-                warpHours = GUILayout.TextField( warpHours, GUILayout.Width( 35 ) );
-                GUILayout.Label( "h " );
-                warpMinutes = GUILayout.TextField( warpMinutes, GUILayout.Width( 35 ) );
-                GUILayout.Label( "m " );
-                warpSeconds = GUILayout.TextField( warpSeconds, GUILayout.Width( 35 ) );
-                GUILayout.Label( "s" );
+                warpYears = GUILayout.TextField(warpYears, GUILayout.Width(35));
+                GUILayout.Label("y ");
+                warpDays = GUILayout.TextField(warpDays, GUILayout.Width(35));
+                GUILayout.Label("d ");
+                warpHours = GUILayout.TextField(warpHours, GUILayout.Width(35));
+                GUILayout.Label("h ");
+                warpMinutes = GUILayout.TextField(warpMinutes, GUILayout.Width(35));
+                GUILayout.Label("m ");
+                warpSeconds = GUILayout.TextField(warpSeconds, GUILayout.Width(35));
+                GUILayout.Label("s");
 
                 if (computeBtn)
                 {
-                    if (int.TryParse( warpYears, out int years )
-                        && int.TryParse( warpDays, out int days )
-                        && int.TryParse( warpHours, out int hrs )
-                        && int.TryParse( warpMinutes, out int min )
-                        && int.TryParse( warpSeconds, out int sec )
+                    if (int.TryParse(warpYears, out int years)
+                        && int.TryParse(warpDays, out int days)
+                        && int.TryParse(warpHours, out int hrs)
+                        && int.TryParse(warpMinutes, out int min)
+                        && int.TryParse(warpSeconds, out int sec)
                         )
                     {
                         CheckTargetUT();
@@ -557,7 +556,7 @@ namespace TimeControl
                     }
                 }
             }
-            GUILayout.EndHorizontal();
+
         }
 
         /// <summary>
@@ -573,14 +572,14 @@ namespace TimeControl
             bool priorEnabled = GUI.enabled;
 
             GUI.enabled = priorEnabled && !(TimeController.Instance.ClosestKACAlarm == null);
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
-                if (GUILayout.Button( "Upcoming KAC Alarm" ))
+                if (GUILayout.Button("Upcoming KAC Alarm"))
                 {
                     TargetUT = TimeController.Instance.ClosestKACAlarm.AlarmTime;
                 }
             }
-            GUILayout.EndHorizontal();
+
             GUI.enabled = priorEnabled;
         }
     }

@@ -12,7 +12,7 @@ namespace TimeControl
         private List<float> hyperWarpRates = null;
         private List<float> hyperWarpPhysicsAccuracyRates = null;
 
-        private bool hyperWarpRatesChangedByGUI = false;      
+        private bool hyperWarpRatesChangedByGUI = false;
 
         private EventData<bool> OnTimeControlCustomHyperWarpRatesChangedEvent;
 
@@ -20,7 +20,7 @@ namespace TimeControl
         {
             if (!GlobalSettings.IsReady)
             {
-                Log.Error( "Global Settings not ready. Cannot create Hyper Editor GUI." );
+                Log.Error("Global Settings not ready. Cannot create Hyper Editor GUI.");
                 throw new InvalidOperationException();
             }
 
@@ -34,19 +34,19 @@ namespace TimeControl
 
         private void UnsubscribeEvents()
         {
-            OnTimeControlCustomHyperWarpRatesChangedEvent?.Remove( OnTimeControlCustomHyperWarpRatesChanged );
+            OnTimeControlCustomHyperWarpRatesChangedEvent?.Remove(OnTimeControlCustomHyperWarpRatesChanged);
         }
 
         private void SubscribeEvents()
         {
-            OnTimeControlCustomHyperWarpRatesChangedEvent = GameEvents.FindEvent<EventData<bool>>( nameof( TimeControlEvents.OnTimeControlCustomHyperWarpRatesChanged ) );
-            OnTimeControlCustomHyperWarpRatesChangedEvent?.Add( OnTimeControlCustomHyperWarpRatesChanged );
+            OnTimeControlCustomHyperWarpRatesChangedEvent = GameEvents.FindEvent<EventData<bool>>(nameof(TimeControlEvents.OnTimeControlCustomHyperWarpRatesChanged));
+            OnTimeControlCustomHyperWarpRatesChangedEvent?.Add(OnTimeControlCustomHyperWarpRatesChanged);
         }
 
         private void OnTimeControlCustomHyperWarpRatesChanged(bool d)
         {
-            const string logBlockName = nameof( HyperEditorIMGUI ) + "." + nameof( OnTimeControlCustomHyperWarpRatesChanged );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperEditorIMGUI) + "." + nameof(OnTimeControlCustomHyperWarpRatesChanged);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (!RailsWarpController.IsReady || !TimeController.IsReady)
                 {
@@ -69,7 +69,7 @@ namespace TimeControl
 
             if (hyperWarpRates == null)
             {
-                hyperWarpRates = HyperWarpController.Instance?.GetCustomHyperWarpRates();                
+                hyperWarpRates = HyperWarpController.Instance?.GetCustomHyperWarpRates();
             }
 
             if (hyperWarpPhysicsAccuracyRates == null)
@@ -77,7 +77,7 @@ namespace TimeControl
                 hyperWarpPhysicsAccuracyRates = HyperWarpController.Instance?.GetCustomHyperWarpPhysicsAccuracyRates();
             }
 
-            GUILayout.BeginVertical();
+            using (new GUILayout.VerticalScope())
             {
                 GUIHeader();
 
@@ -85,11 +85,10 @@ namespace TimeControl
 
                 GUIEditor();
 
-                GUILayout.Label( "", GUILayout.Height( 5 ) );
+                GUILayout.Label("", GUILayout.Height(5));
 
                 GUIActions();
             }
-            GUILayout.EndVertical();
 
             GUI.enabled = guiPriorEnabled;
         }
@@ -98,14 +97,13 @@ namespace TimeControl
         {
             bool guiPriorEnabled = GUI.enabled;
 
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
-                GUILayout.Label( "Hyper Warp Rates & Accuracy" );
+                GUILayout.Label("Hyper Warp Rates & Accuracy");
                 GUILayout.FlexibleSpace();
             }
-            GUILayout.EndHorizontal();
 
-            GUILayout.Label( "", GUILayout.Height( 5 ) );
+            GUILayout.Label("", GUILayout.Height(5));
 
             GUI.enabled = guiPriorEnabled;
         }
@@ -114,16 +112,16 @@ namespace TimeControl
         {
             bool guiPriorEnabled = GUI.enabled;
 
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
-                if (GUILayout.Button( "Reset Hyper Rates to Defaults" ))
+                if (GUILayout.Button("Reset Hyper Rates to Defaults"))
                 {
                     HyperWarpController.Instance.ResetHyperWarpRates();
                     hyperWarpRates = HyperWarpController.Instance.GetCustomHyperWarpRates();
                     hyperWarpPhysicsAccuracyRates = HyperWarpController.Instance.GetCustomHyperWarpPhysicsAccuracyRates();
                 }
             }
-            GUILayout.EndHorizontal();
+
 
             GUI.enabled = guiPriorEnabled;
         }
@@ -133,10 +131,10 @@ namespace TimeControl
         {
             bool guiPriorEnabled = GUI.enabled;
 
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
                 GUI.enabled = guiPriorEnabled && (hyperWarpRatesChangedByGUI);
-                if (GUILayout.Button( "Apply Changes" ))
+                if (GUILayout.Button("Apply Changes"))
                 {
                     if (hyperWarpRatesChangedByGUI)
                     {
@@ -144,48 +142,48 @@ namespace TimeControl
                         List<Tuple<float, float>> f = new List<Tuple<float, float>>();
 
                         int i = 0;
-                        hyperWarpRates.ForEach( r =>
+                        hyperWarpRates.ForEach(r =>
                         {
-                            f.Add( new Tuple<float, float> (r, hyperWarpPhysicsAccuracyRates[i]) );
+                            f.Add(new Tuple<float, float>(r, hyperWarpPhysicsAccuracyRates[i]));
                             ++i;
-                        } );
+                        });
 
-                        f.Sort( (a, b) => a.Item1.CompareTo( b.Item1 ) );
+                        f.Sort((a, b) => a.Item1.CompareTo(b.Item1));
 
                         hyperWarpRates = new List<float>();
                         hyperWarpPhysicsAccuracyRates = new List<float>();
 
-                        f.ForEach( x =>
+                        f.ForEach(x =>
                         {
-                            hyperWarpRates.Add( x.Item1 );
-                            hyperWarpPhysicsAccuracyRates.Add( x.Item2 );
-                        } );
+                            hyperWarpRates.Add(x.Item1);
+                            hyperWarpPhysicsAccuracyRates.Add(x.Item2);
+                        });
 
                         f.Clear();
                         f = null;
 
-                        HyperWarpController.Instance?.SetCustomHyperWarpRates( hyperWarpRates, hyperWarpPhysicsAccuracyRates );
+                        HyperWarpController.Instance?.SetCustomHyperWarpRates(hyperWarpRates, hyperWarpPhysicsAccuracyRates);
                         hyperWarpRatesChangedByGUI = false;
                     }
                 }
                 GUI.enabled = guiPriorEnabled;
             }
-            GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
+
+            using (new GUILayout.HorizontalScope())
             {
                 GUIWarpLevelsButtons();
             }
-            GUILayout.EndHorizontal();
 
-            warpScroll = GUILayout.BeginScrollView( warpScroll, GUILayout.Height( 260 ) );
+
+            warpScroll = GUILayout.BeginScrollView(warpScroll, GUILayout.Height(260));
             {
-                GUILayout.BeginHorizontal();
+                using (new GUILayout.HorizontalScope())
                 {
                     GUIWarpRatesList();
                     GUIPhysicsAccuracyList();
                 }
-                GUILayout.EndHorizontal();
+
             }
             GUILayout.EndScrollView();
 
@@ -196,27 +194,26 @@ namespace TimeControl
         {
             bool guiPriorEnabled = GUI.enabled;
 
-            GUILayout.BeginHorizontal( GUILayout.Width( 175 ) );
+            using (new GUILayout.HorizontalScope(GUILayout.Width(175)))
             {
-                GUILayout.Label( "Add/Remove Rate" );
-                if (GUILayout.Button( "+", GUILayout.Width( 20 ) ))
+                GUILayout.Label("Add/Remove Rate");
+                if (GUILayout.Button("+", GUILayout.Width(20)))
                 {
                     if (hyperWarpRates.Count < 99)
                     {
-                        hyperWarpRates.Add( hyperWarpRates.Max() + 1.0f );
-                        hyperWarpPhysicsAccuracyRates.Add( hyperWarpPhysicsAccuracyRates.Max() );
+                        hyperWarpRates.Add(hyperWarpRates.Max() + 1.0f);
+                        hyperWarpPhysicsAccuracyRates.Add(hyperWarpPhysicsAccuracyRates.Max());
                     }
                 }
-                if (GUILayout.Button( "-", GUILayout.Width( 20 ) ))
+                if (GUILayout.Button("-", GUILayout.Width(20)))
                 {
                     if (hyperWarpRates.Count > 2)
                     {
-                        hyperWarpRates.RemoveAt( hyperWarpRates.Count - 1 );
-                        hyperWarpPhysicsAccuracyRates.RemoveAt( hyperWarpPhysicsAccuracyRates.Count - 1 );
+                        hyperWarpRates.RemoveAt(hyperWarpRates.Count - 1);
+                        hyperWarpPhysicsAccuracyRates.RemoveAt(hyperWarpPhysicsAccuracyRates.Count - 1);
                     }
                 }
             }
-            GUILayout.EndHorizontal();
 
             GUI.enabled = guiPriorEnabled;
         }
@@ -232,36 +229,34 @@ namespace TimeControl
                 return;
             }
 
-            GUILayout.BeginVertical( GUILayout.Width( 20 ) );
+            using (new GUILayout.VerticalScope(GUILayout.Width(20)))
             {
                 for (int i = 0; i < WRCount; i++)
                 {
-                    GUILayout.Label( i + 1 + ":" );
+                    GUILayout.Label(i + 1 + ":");
                 }
             }
-            GUILayout.EndVertical();
 
-            GUILayout.BeginVertical( GUILayout.Width( 115 ) );
+            using (new GUILayout.VerticalScope(GUILayout.Width(115)))
             {
                 for (int i = 0; i < WRCount; i++)
                 {
                     string curRate = hyperWarpRates[i].MemoizedToString();
                     GUI.enabled = guiPriorEnabled && (i != 0);
-                    string newRate = GUILayout.TextField( curRate, 10 );
+                    string newRate = GUILayout.TextField(curRate, 10);
                     GUI.enabled = guiPriorEnabled;
                     if (newRate != curRate)
                     {
-                        float rateConv = float.TryParse( newRate, out rateConv ) ? rateConv : -1;
+                        float rateConv = float.TryParse(newRate, out rateConv) ? rateConv : -1;
                         if (rateConv != -1)
                         {
                             hyperWarpRatesChangedByGUI = true;
                             hyperWarpRates[i] = (float)rateConv;
                         }
-                        curRate = newRate;
+                        //curRate = newRate;
                     }
                 }
             }
-            GUILayout.EndVertical();
 
             GUI.enabled = guiPriorEnabled;
         }
@@ -277,40 +272,37 @@ namespace TimeControl
                 return;
             }
 
-            GUILayout.BeginVertical( GUILayout.Width( 20 ) );
+            using (new GUILayout.VerticalScope(GUILayout.Width(20)))
             {
                 for (int i = 0; i < WRCount; i++)
                 {
-                    GUILayout.Label( i + 1 + ":" );
+                    GUILayout.Label(i + 1 + ":");
                 }
             }
-            GUILayout.EndVertical();
 
-            GUILayout.BeginVertical( GUILayout.Width( 115 ) );
+            using (new GUILayout.VerticalScope(GUILayout.Width(145)))
             {
                 for (int i = 0; i < WRCount; i++)
                 {
                     string curRate = hyperWarpPhysicsAccuracyRates[i].MemoizedToString();
                     GUI.enabled = guiPriorEnabled && (i != 0);
-                    string newRate = GUILayout.TextField( curRate, 10 );
+                    string newRate = GUILayout.TextField(curRate, 10);
                     GUI.enabled = guiPriorEnabled;
                     if (newRate != curRate)
                     {
-                        float rateConv = float.TryParse( newRate, out rateConv ) ? rateConv : -1;
+                        float rateConv = float.TryParse(newRate, out rateConv) ? rateConv : -1;
                         if (rateConv != -1)
                         {
                             hyperWarpRatesChangedByGUI = true;
                             hyperWarpPhysicsAccuracyRates[i] = (float)rateConv;
                         }
-                        curRate = newRate;
+                        //curRate = newRate;
                     }
                 }
             }
-            GUILayout.EndVertical();
 
             GUI.enabled = guiPriorEnabled;
         }
-
     }
 }
 /*

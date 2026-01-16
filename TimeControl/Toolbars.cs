@@ -1,11 +1,10 @@
-﻿using System;
+﻿using KSP.UI.Screens;
 using System.Collections;
 using UnityEngine;
-using KSP.UI.Screens;
 
 namespace TimeControl
 {
-    [KSPAddon( KSPAddon.Startup.Instantly, true )]
+    [KSPAddon(KSPAddon.Startup.Instantly, true)]
     internal sealed class Toolbars : MonoBehaviour
     {
         #region Singleton
@@ -13,11 +12,11 @@ namespace TimeControl
         internal bool IsReady { get; private set; } = false;
         #endregion
 
-        private ApplicationLauncher.AppScenes AppScenes = ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.TRACKSTATION;
+        private readonly ApplicationLauncher.AppScenes AppScenes = ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.TRACKSTATION;
         private Texture2D buttonTexture;
         private ApplicationLauncherButton appLauncherButton;
         private BlizzyToolbar.IButton toolbarButton;
-        
+
         private bool StockToolbarEnabled
         {
             get => HighLogic.CurrentGame?.Parameters?.CustomParams<TimeControlParameterNode>()?.UseStockToolbar ?? false;
@@ -31,13 +30,13 @@ namespace TimeControl
         #region MonoBehavior
         private void Awake()
         {
-            DontDestroyOnLoad( this );
+            DontDestroyOnLoad(this);
             Instance = this;
         }
 
         private void Start()
         {
-            StartCoroutine( Configure() );
+            StartCoroutine(Configure());
         }
 
         #endregion
@@ -47,25 +46,25 @@ namespace TimeControl
         /// Configures the Toolbars once the Settings are loaded
         /// </summary>
         public IEnumerator Configure()
-        {            
+        {
             while (!GlobalSettings.IsReady || !TimeControlIMGUI.IsReady)
             {
-                yield return new WaitForSeconds( 1f );
+                yield return new WaitForSeconds(1f);
             }
 
-            buttonTexture = GameDatabase.Instance.GetTexture( PluginAssemblyUtilities.GameDatabasePathStockToolbarIcons + "/enabled", false );
+            buttonTexture = GameDatabase.Instance.GetTexture(PluginAssemblyUtilities.GameDatabasePathStockToolbarIcons + "/enabled", false);
 
-            global::GameEvents.onGUIApplicationLauncherReady.Add( this.AppLauncherReady );
-            global::GameEvents.onGUIApplicationLauncherDestroyed.Add( this.AppLauncherDestroyed );
-            global::GameEvents.onLevelWasLoadedGUIReady.Add( this.AppLauncherDestroyed );
-            global::GameEvents.OnGameSettingsApplied.Add( this.OnGameSettingsApplied );
+            global::GameEvents.onGUIApplicationLauncherReady.Add(this.AppLauncherReady);
+            global::GameEvents.onGUIApplicationLauncherDestroyed.Add(this.AppLauncherDestroyed);
+            global::GameEvents.onLevelWasLoadedGUIReady.Add(this.AppLauncherDestroyed);
+            global::GameEvents.OnGameSettingsApplied.Add(this.OnGameSettingsApplied);
 
             if (BlizzyToolbar.ToolbarManager.ToolbarAvailable)
             {
-                toolbarButton = BlizzyToolbar.ToolbarManager.Instance.add( "TimeControl", "button" );
+                toolbarButton = BlizzyToolbar.ToolbarManager.Instance.add("TimeControl", "button");
                 toolbarButton.TexturePath = "TimeControl/ToolbarIcons/BlizzyToolbarIcons/enabled";
                 toolbarButton.ToolTip = "Time Control";
-                toolbarButton.Visibility = new BlizzyToolbar.GameScenesVisibility( GameScenes.FLIGHT, GameScenes.TRACKSTATION, GameScenes.SPACECENTER ); //Places where the button should show up
+                toolbarButton.Visibility = new BlizzyToolbar.GameScenesVisibility(GameScenes.FLIGHT, GameScenes.TRACKSTATION, GameScenes.SPACECENTER); //Places where the button should show up
                 toolbarButton.OnClick += BlizzyToolbarButtonClick;
             }
 
@@ -79,7 +78,7 @@ namespace TimeControl
         private void BlizzyToolbarButtonClick(BlizzyToolbar.ClickEvent e)
         {
             TimeControlIMGUI.Instance.ToggleGUIVisibility();
-            Set( TimeControlIMGUI.Instance.WindowVisible );
+            Set(TimeControlIMGUI.Instance.WindowVisible);
         }
 
         private void OnGameSettingsApplied()
@@ -95,7 +94,7 @@ namespace TimeControl
             }
 
             TimeControlIMGUI.Instance.ToggleGUIVisibility();
-            Set( TimeControlIMGUI.Instance.WindowVisible );
+            Set(TimeControlIMGUI.Instance.WindowVisible);
         }
 
         private void AppLauncherShow()
@@ -105,7 +104,7 @@ namespace TimeControl
                 return;
             }
 
-            TimeControlIMGUI.Instance.TempUnHideGUI( "StockAppLauncher" );
+            TimeControlIMGUI.Instance.TempUnHideGUI("StockAppLauncher");
         }
         private void AppLancherHide()
         {
@@ -113,7 +112,7 @@ namespace TimeControl
             {
                 return;
             }
-            TimeControlIMGUI.Instance.TempHideGUI( "StockAppLauncher" );
+            TimeControlIMGUI.Instance.TempHideGUI("StockAppLauncher");
         }
 
         private void AppLauncherReady()
@@ -141,10 +140,10 @@ namespace TimeControl
 
         private void OnDestroy()
         {
-            global::GameEvents.onGUIApplicationLauncherReady.Remove( this.AppLauncherReady );
-            global::GameEvents.onGUIApplicationLauncherDestroyed.Remove( this.AppLauncherDestroyed );
-            global::GameEvents.onLevelWasLoadedGUIReady.Remove( this.AppLauncherDestroyed );
-            global::GameEvents.OnGameSettingsApplied.Remove( this.OnGameSettingsApplied );
+            global::GameEvents.onGUIApplicationLauncherReady.Remove(this.AppLauncherReady);
+            global::GameEvents.onGUIApplicationLauncherDestroyed.Remove(this.AppLauncherDestroyed);
+            global::GameEvents.onLevelWasLoadedGUIReady.Remove(this.AppLauncherDestroyed);
+            global::GameEvents.OnGameSettingsApplied.Remove(this.OnGameSettingsApplied);
         }
 
         private void Init()
@@ -156,25 +155,25 @@ namespace TimeControl
 
             if (appLauncherButton == null)
             {
-                appLauncherButton = ApplicationLauncher.Instance.AddModApplication( OnClick, OnClick, null, null, null, null, AppScenes, buttonTexture );
+                appLauncherButton = ApplicationLauncher.Instance.AddModApplication(OnClick, OnClick, null, null, null, null, AppScenes, buttonTexture);
             }
 
-            Set( TimeControlIMGUI.Instance.WindowVisible );
+            Set(TimeControlIMGUI.Instance.WindowVisible);
 
-            ApplicationLauncher.Instance.RemoveOnHideCallback( AppLancherHide );
-            ApplicationLauncher.Instance.RemoveOnShowCallback( AppLauncherShow );
-            ApplicationLauncher.Instance.AddOnShowCallback( AppLauncherShow );
-            ApplicationLauncher.Instance.AddOnHideCallback( AppLancherHide );
+            ApplicationLauncher.Instance.RemoveOnHideCallback(AppLancherHide);
+            ApplicationLauncher.Instance.RemoveOnShowCallback(AppLauncherShow);
+            ApplicationLauncher.Instance.AddOnShowCallback(AppLauncherShow);
+            ApplicationLauncher.Instance.AddOnHideCallback(AppLancherHide);
         }
 
         private void Destroy()
         {
             if (appLauncherButton != null)
             {
-                ApplicationLauncher.Instance.RemoveOnHideCallback( AppLancherHide );
-                ApplicationLauncher.Instance.RemoveOnShowCallback( AppLauncherShow );
-                ApplicationLauncher.Instance.RemoveModApplication( appLauncherButton );
-                ApplicationLauncher.Instance.RemoveApplication( appLauncherButton );
+                ApplicationLauncher.Instance.RemoveOnHideCallback(AppLancherHide);
+                ApplicationLauncher.Instance.RemoveOnShowCallback(AppLauncherShow);
+                ApplicationLauncher.Instance.RemoveModApplication(appLauncherButton);
+                ApplicationLauncher.Instance.RemoveApplication(appLauncherButton);
                 appLauncherButton = null;
             }
         }
@@ -188,14 +187,14 @@ namespace TimeControl
             {
                 if (appLauncherButton.enabled == false)
                 {
-                    appLauncherButton.SetTrue( force );
+                    appLauncherButton.SetTrue(force);
                 }
             }
             else
             {
                 if (appLauncherButton.enabled == true)
                 {
-                    appLauncherButton.SetFalse( force );
+                    appLauncherButton.SetFalse(force);
                 }
             }
         }
@@ -204,7 +203,7 @@ namespace TimeControl
         {
             if (appLauncherButton != null)
             {
-                Set( false );
+                Set(false);
                 if (!StockToolbarEnabled)
                 {
                     Destroy();

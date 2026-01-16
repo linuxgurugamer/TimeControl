@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace TimeControl
 {
-    [KSPAddon( KSPAddon.Startup.Instantly, true )]
+    [KSPAddon(KSPAddon.Startup.Instantly, true)]
     internal class TimeControlIMGUI : MonoBehaviour
     {
 
@@ -34,12 +34,12 @@ namespace TimeControl
 
         public void TempHideGUI(string lockedBy)
         {
-            tempGUIHidden.Add( lockedBy );
+            tempGUIHidden.Add(lockedBy);
         }
 
         public void TempUnHideGUI(string lockedBy)
         {
-            tempGUIHidden.RemoveAll( x => x == lockedBy );
+            tempGUIHidden.RemoveAll(x => x == lockedBy);
         }
 
         public void TempUnHideGUI()
@@ -76,16 +76,16 @@ namespace TimeControl
         //GUI Layout        
         private bool priorWindowVisible = false;
 
-        private static Rect mode0Button = new Rect( 10, -1, 25, 20 );
-        private static Rect mode1Button = new Rect( 25, -1, 25, 20 );
-        private static Rect mode2Button = new Rect( 40, -1, 25, 20 );
-        private static Rect mode3Button = new Rect( 55, -1, 25, 20 );
-        private static Rect mode4Button = new Rect( 70, -1, 25, 20 );
-        private static Rect mode5Button = new Rect( 85, -1, 25, 20 );
-        private static Rect mode6Button = new Rect( 100, -1, 25, 20 );
-        private static Rect mode7Button = new Rect( 115, -1, 25, 20 );
+        private static Rect mode0Button = new Rect(10, -1, 25, 20);
+        private static Rect mode1Button = new Rect(25, -1, 25, 20);
+        private static Rect mode2Button = new Rect(40, -1, 25, 20);
+        private static Rect mode3Button = new Rect(55, -1, 25, 20);
+        private static Rect mode4Button = new Rect(70, -1, 25, 20);
+        private static Rect mode5Button = new Rect(85, -1, 25, 20);
+        private static Rect mode6Button = new Rect(100, -1, 25, 20);
+        private static Rect mode7Button = new Rect(115, -1, 25, 20);
 
-        private Rect windowRect = new Rect( 100, 100, 375, 0 );
+        private Rect windowRect = new Rect(100, 100, 375, 0);
 
         private int tcsWindowHashCode = "Time Control IMGUI".GetHashCode();
 
@@ -151,42 +151,42 @@ namespace TimeControl
         #region One-Time
         private void Awake()
         {
-            const string logBlockName = nameof( TimeControlIMGUI ) + "." + nameof( Awake );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeControlIMGUI) + "." + nameof(Awake);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                UnityEngine.Object.DontDestroyOnLoad( this ); //Don't go away on scene changes
+                UnityEngine.Object.DontDestroyOnLoad(this); //Don't go away on scene changes
                 instance = this;
             }
         }
 
         private void Start()
         {
-            const string logBlockName = nameof( TimeControlIMGUI ) + "." + nameof( Start );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeControlIMGUI) + "." + nameof(Start);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 // Hide / Show UI on these events
-                global::GameEvents.onGameSceneLoadRequested.Add( this.onGameSceneLoadRequested );
-                global::GameEvents.onLevelWasLoaded.Add( this.onLevelWasLoaded );
-                global::GameEvents.onHideUI.Add( this.onHideUI );
-                global::GameEvents.onShowUI.Add( this.onShowUI );
-                global::GameEvents.onGamePause.Add( this.onGamePause );
-                global::GameEvents.onGameUnpause.Add( this.onGameUnpause );
+                global::GameEvents.onGameSceneLoadRequested.Add(this.onGameSceneLoadRequested);
+                global::GameEvents.onLevelWasLoaded.Add(this.onLevelWasLoaded);
+                global::GameEvents.onHideUI.Add(this.onHideUI);
+                global::GameEvents.onShowUI.Add(this.onShowUI);
+                global::GameEvents.onGamePause.Add(this.onGamePause);
+                global::GameEvents.onGameUnpause.Add(this.onGameUnpause);
                 //global::GameEvents.OnGameSettingsApplied.Add( this.OnGameSettingsApplied );
 
                 //defaultDTFormatter = KSPUtil.dateTimeFormatter;
 
-                StartCoroutine( Configure() );
+                StartCoroutine(Configure());
             }
         }
         private void OnDestroy()
         {
-            OnTimeControlGlobalSettingsLoadedEvent?.Remove( OnTimeControlGlobalSettingsLoaded );
+            OnTimeControlGlobalSettingsLoadedEvent?.Remove(OnTimeControlGlobalSettingsLoaded);
         }
 
         private void OnTimeControlGlobalSettingsLoaded(bool b)
         {
-            const string logBlockName = nameof( TimeControlIMGUI ) + "." + nameof( OnTimeControlGlobalSettingsLoaded );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeControlIMGUI) + "." + nameof(OnTimeControlGlobalSettingsLoaded);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 LoadSettings();
             }
@@ -194,12 +194,12 @@ namespace TimeControl
 
         private void LoadSettings()
         {
-            const string logBlockName = nameof( TimeControlIMGUI ) + "." + nameof( LoadSettings );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeControlIMGUI) + "." + nameof(LoadSettings);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (!GlobalSettings.IsReady)
                 {
-                    Log.Error( "Global Settings Object is not ready", logBlockName );
+                    Log.Error("Global Settings Object is not ready", logBlockName);
                     return;
                 }
                 spaceCenterWindow_x = GlobalSettings.Instance.SpaceCenterWindow.X;
@@ -216,12 +216,12 @@ namespace TimeControl
 
         private void SaveSettings()
         {
-            const string logBlockName = nameof( TimeControlIMGUI ) + "." + nameof( SaveSettings );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeControlIMGUI) + "." + nameof(SaveSettings);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (!GlobalSettings.IsReady)
                 {
-                    Log.Error( "Global Settings Object is not ready", logBlockName );
+                    Log.Error("Global Settings Object is not ready", logBlockName);
                     return;
                 }
 
@@ -244,8 +244,8 @@ namespace TimeControl
         /// </summary>
         private IEnumerator Configure()
         {
-            const string logBlockName = nameof( TimeControlIMGUI ) + "." + nameof( Configure );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeControlIMGUI) + "." + nameof(Configure);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 // Wait for TimeController object to be ready
                 while (!TimeController.IsReady || !RailsWarpController.IsReady || !SlowMoController.IsReady || !HyperWarpController.IsReady || !GlobalSettings.IsReady)
@@ -253,8 +253,8 @@ namespace TimeControl
                     yield return null;
                 }
 
-                OnTimeControlGlobalSettingsLoadedEvent = GameEvents.FindEvent<EventData<bool>>( nameof( TimeControlEvents.OnTimeControlGlobalSettingsChanged ) );
-                OnTimeControlGlobalSettingsLoadedEvent?.Add( OnTimeControlGlobalSettingsLoaded );
+                OnTimeControlGlobalSettingsLoadedEvent = GameEvents.FindEvent<EventData<bool>>(nameof(TimeControlEvents.OnTimeControlGlobalSettingsChanged));
+                OnTimeControlGlobalSettingsLoadedEvent?.Add(OnTimeControlGlobalSettingsLoaded);
 
                 railsWarpToGUI = new RailsWarpToIMGUI();
                 railsEditorGUI = new RailsEditorIMGUI();
@@ -265,7 +265,7 @@ namespace TimeControl
                 quickWarpToGUI = new QuickWarpToIMGUI();
                 hyperEditorGUI = new HyperEditorIMGUI();
 
-                Log.Info( nameof( TimeControlIMGUI ) + " is Ready!", logBlockName );
+                Log.Info(nameof(TimeControlIMGUI) + " is Ready!", logBlockName);
                 IsReady = true;
 
             }
@@ -276,8 +276,8 @@ namespace TimeControl
         #region Event Handlers
         private void onGameSceneLoadRequested(GameScenes gs)
         {
-            const string logBlockName = nameof( TimeControlIMGUI ) + "." + nameof( onGameSceneLoadRequested );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeControlIMGUI) + "." + nameof(onGameSceneLoadRequested);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 onHideUI();
             }
@@ -285,8 +285,8 @@ namespace TimeControl
 
         private void onLevelWasLoaded(GameScenes gs)
         {
-            const string logBlockName = nameof( TimeControlIMGUI ) + "." + nameof( onLevelWasLoaded );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeControlIMGUI) + "." + nameof(onLevelWasLoaded);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
                 {
@@ -308,46 +308,54 @@ namespace TimeControl
                 }
                 windowRect.ClampToScreen();
                 TempUnHideGUI();
+
+                if (RailsWarpController.Instance != null && RailsWarpController.Instance.autoDisable)
+                {
+                    CheatOptions.InfiniteElectricity = false;
+                    RailsWarpController.Instance.autoDisable = false;
+                    ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
+                }
+
             }
         }
 
         private void onGamePause()
         {
-            const string logBlockName = nameof( TimeControlIMGUI ) + "." + nameof( onGamePause );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeControlIMGUI) + "." + nameof(onGamePause);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( "Hiding GUI for KSP Pause", logBlockName );
-                TempHideGUI( "GamePaused" );
+                Log.Info("Hiding GUI for KSP Pause", logBlockName);
+                TempHideGUI("GamePaused");
             }
         }
 
         private void onGameUnpause()
         {
-            const string logBlockName = nameof( TimeControlIMGUI ) + "." + nameof( onGameUnpause );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeControlIMGUI) + "." + nameof(onGameUnpause);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( "Unhiding GUI for KSP Pause", logBlockName );
-                TempUnHideGUI( "GamePaused" );
+                Log.Info("Unhiding GUI for KSP Pause", logBlockName);
+                TempUnHideGUI("GamePaused");
             }
         }
 
         private void onHideUI()
         {
-            const string logBlockName = nameof( TimeControlIMGUI ) + "." + nameof( onHideUI );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeControlIMGUI) + "." + nameof(onHideUI);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( "Hiding GUI for Game Event", logBlockName );
-                TempHideGUI( "GameEventsUI" );
+                Log.Info("Hiding GUI for Game Event", logBlockName);
+                TempHideGUI("GameEventsUI");
             }
         }
 
         private void onShowUI()
         {
-            const string logBlockName = nameof( TimeControlIMGUI ) + "." + nameof( onShowUI );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeControlIMGUI) + "." + nameof(onShowUI);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( "Unhiding GUI for Game Event", logBlockName );
-                TempUnHideGUI( "GameEventsUI" );
+                Log.Info("Unhiding GUI for Game Event", logBlockName);
+                TempUnHideGUI("GameEventsUI");
             }
         }
         #endregion
@@ -368,6 +376,7 @@ namespace TimeControl
             }
 
             UnityEngine.GUI.skin = null;
+            //GUI.skin = HighLogic.Skin;
             if (WindowVisible)
             {
                 //if (PerformanceManager.IsReady)
@@ -409,7 +418,7 @@ namespace TimeControl
 
         private void OnGUIWindow()
         {
-            windowRect = GUILayout.Window( tcsWindowHashCode, windowRect, MainGUI, "Time Control" );
+            windowRect = GUILayout.Window(tcsWindowHashCode, windowRect, MainGUI, "Time Control");
             windowRect.ClampToScreen();
 
             if (HighLogic.LoadedScene == GameScenes.SPACECENTER)
@@ -511,43 +520,45 @@ namespace TimeControl
             if (Event.current.button > 0 && Event.current.type != EventType.Repaint && Event.current.type != EventType.Layout) //Ignore right & middle clicks
                 Event.current.Use();
 
+            ToolTips.ShowToolTip(windowRect);
+
             UnityEngine.GUI.DragWindow();
         }
 
         private void GUIHeaderCurrentWarpState()
         {
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
                 if (RailsWarpController.Instance.IsRailsWarpingNoPhys)
                 {
-                    string rate = RailsWarpController.Instance.CurrentWarpRate.MemoizedToString().MemoizedConcat( "x" );
-                    GUILayout.Label( "Rails: ".MemoizedConcat( rate ) );
+                    string rate = RailsWarpController.Instance.CurrentWarpRate.MemoizedToString().MemoizedConcat("x");
+                    GUILayout.Label("Rails: ".MemoizedConcat(rate));
                 }
                 else if (RailsWarpController.Instance.IsRailsWarpingPhys)
                 {
-                    string rate = RailsWarpController.Instance.CurrentWarpRate.MemoizedToString().MemoizedConcat( "x" );
-                    GUILayout.Label( "KSP-Phys: ".MemoizedConcat( rate ) );
+                    string rate = RailsWarpController.Instance.CurrentWarpRate.MemoizedToString().MemoizedConcat("x");
+                    GUILayout.Label("KSP-Phys: ".MemoizedConcat(rate));
                 }
                 else
                 {
                     if (PerformanceCountersOn)
                     {
-                        string rate = ((PhysicsTimeRatio / 1 * 100).MemoizedToString( "0" )).MemoizedConcat( "%" );
-                        GUILayout.Label( "PTR: ".MemoizedConcat( rate ) );
+                        string rate = ((PhysicsTimeRatio / 1 * 100).MemoizedToString("0")).MemoizedConcat("%");
+                        GUILayout.Label("PTR: ".MemoizedConcat(rate));
                     }
                     else
                     {
-                        GUILayout.Label( "PTR: N/A" );
+                        GUILayout.Label("PTR: N/A");
                     }
                 }
 
                 if (PerformanceCountersOn)
                 {
-                    GUILayout.Label( "FPS: ".MemoizedConcat( (Mathf.Round( Convert.ToSingle( FramesPerSecond ) * 10f ) / 10f).MemoizedToString() ) );
+                    GUILayout.Label("FPS: ".MemoizedConcat((Mathf.Round(Convert.ToSingle(FramesPerSecond) * 10f) / 10f).MemoizedToString()));
                 }
                 else
                 {
-                    GUILayout.Label( "FPS: N/A" );
+                    GUILayout.Label("FPS: N/A");
                 }
 
                 GUILayout.FlexibleSpace();
@@ -556,7 +567,7 @@ namespace TimeControl
                 GUITimeStepButton();
                 GUIReturnToRealtimeButton();
             }
-            GUILayout.EndHorizontal();
+
         }
 
         private void GUIHeaderButtons()
@@ -570,9 +581,9 @@ namespace TimeControl
             {
                 if (WindowSelectedMode != GUIMode.Details)
                 {
-                    UnityEngine.GUI.contentColor = new Color( 0.5f, 0.5f, 0.5f );
+                    UnityEngine.GUI.contentColor = new Color(0.5f, 0.5f, 0.5f);
                 }
-                if (UnityEngine.GUI.Button( mode0Button, "?" ))
+                if (UnityEngine.GUI.Button(mode0Button, new GUIContent("?", "Info page")))
                 {
                     WindowSelectedMode = GUIMode.Details;
                     windowRect.height = 0;
@@ -583,9 +594,9 @@ namespace TimeControl
             {
                 if (WindowSelectedMode != GUIMode.QuickWarp)
                 {
-                    UnityEngine.GUI.contentColor = new Color( 0.5f, 0.5f, 0.5f );
+                    UnityEngine.GUI.contentColor = new Color(0.5f, 0.5f, 0.5f);
                 }
-                if (UnityEngine.GUI.Button( mode1Button, "Q" ))
+                if (UnityEngine.GUI.Button(mode1Button, new GUIContent("Q", "Quick Warp settings")))
                 {
                     WindowSelectedMode = GUIMode.QuickWarp;
                     windowRect.height = 0;
@@ -596,9 +607,9 @@ namespace TimeControl
             {
                 if (WindowSelectedMode != GUIMode.RailsWarpTo)
                 {
-                    UnityEngine.GUI.contentColor = new Color( 0.5f, 0.5f, 0.5f );
+                    UnityEngine.GUI.contentColor = new Color(0.5f, 0.5f, 0.5f);
                 }
-                if (UnityEngine.GUI.Button( mode2Button, "W" ))
+                if (UnityEngine.GUI.Button(mode2Button, new GUIContent("W", "Warp-To UT")))
                 {
                     WindowSelectedMode = GUIMode.RailsWarpTo;
                     windowRect.height = 0;
@@ -610,9 +621,9 @@ namespace TimeControl
             {
                 if (WindowSelectedMode != GUIMode.RailsEditor)
                 {
-                    UnityEngine.GUI.contentColor = new Color( 0.5f, 0.5f, 0.5f );
+                    UnityEngine.GUI.contentColor = new Color(0.5f, 0.5f, 0.5f);
                 }
-                if (UnityEngine.GUI.Button( mode3Button, "R" ))
+                if (UnityEngine.GUI.Button(mode3Button, new GUIContent("R", "Rails Editor (normal warping)")))
                 {
                     WindowSelectedMode = GUIMode.RailsEditor;
                     windowRect.height = 0;
@@ -624,9 +635,9 @@ namespace TimeControl
             {
                 if (WindowSelectedMode != GUIMode.KeyBindingsEditor)
                 {
-                    UnityEngine.GUI.contentColor = new Color( 0.5f, 0.5f, 0.5f );
+                    UnityEngine.GUI.contentColor = new Color(0.5f, 0.5f, 0.5f);
                 }
-                if (UnityEngine.GUI.Button( mode4Button, "K" ))
+                if (UnityEngine.GUI.Button(mode4Button, new GUIContent("K", "Key Bindings")))
                 {
                     WindowSelectedMode = GUIMode.KeyBindingsEditor;
                     windowRect.height = 0;
@@ -638,9 +649,9 @@ namespace TimeControl
             {
                 if (WindowSelectedMode != GUIMode.HyperWarpEditor)
                 {
-                    UnityEngine.GUI.contentColor = new Color( 0.5f, 0.5f, 0.5f );
+                    UnityEngine.GUI.contentColor = new Color(0.5f, 0.5f, 0.5f);
                 }
-                if (UnityEngine.GUI.Button( mode5Button, "E" ))
+                if (UnityEngine.GUI.Button(mode5Button, new GUIContent("E", "Hyper-Warp Rates Settings/Editor")))
                 {
                     WindowSelectedMode = GUIMode.HyperWarpEditor;
                     windowRect.height = 0;
@@ -655,9 +666,9 @@ namespace TimeControl
                 {
                     if (WindowSelectedMode != GUIMode.SlowMotion)
                     {
-                        UnityEngine.GUI.contentColor = new Color( 0.5f, 0.5f, 0.5f );
+                        UnityEngine.GUI.contentColor = new Color(0.5f, 0.5f, 0.5f);
                     }
-                    if (UnityEngine.GUI.Button( mode6Button, "S" ))
+                    if (UnityEngine.GUI.Button(mode6Button, new GUIContent("S", "Slow-Motion")))
                     {
                         WindowSelectedMode = GUIMode.SlowMotion;
                         windowRect.height = 0;
@@ -669,9 +680,9 @@ namespace TimeControl
                 {
                     if (WindowSelectedMode != GUIMode.HyperWarp)
                     {
-                        UnityEngine.GUI.contentColor = new Color( 0.5f, 0.5f, 0.5f );
+                        UnityEngine.GUI.contentColor = new Color(0.5f, 0.5f, 0.5f);
                     }
-                    if (UnityEngine.GUI.Button( mode7Button, "H" ))
+                    if (UnityEngine.GUI.Button(mode7Button, new GUIContent("H", "Hyper Warp")))
                     {
                         WindowSelectedMode = GUIMode.HyperWarp;
                         windowRect.height = 0;
@@ -687,31 +698,31 @@ namespace TimeControl
             bool returnButton = false;
             if (FlightDriver.Pause)
             {
-                GUILayout.Label( "PAUSED-KSP" );
+                GUILayout.Label("PAUSED-KSP");
             }
             else if (TimeController.Instance.IsTimeControlPaused)
             {
-                GUILayout.Label( "PAUSED-TC" );
+                GUILayout.Label("PAUSED-TC");
             }
             else if (HyperWarpController.Instance.IsHyperWarping)
             {
-                returnButton = GUILayout.Button( "HYPER" );
+                returnButton = GUILayout.Button("HYPER");
             }
             else if (RailsWarpController.Instance.IsRailsWarpingNoPhys)
             {
-                returnButton = GUILayout.Button( "RAILS" );
+                returnButton = GUILayout.Button("RAILS");
             }
             else if (RailsWarpController.Instance.IsRailsWarpingPhys)
             {
-                returnButton = GUILayout.Button( "PHYS" );
+                returnButton = GUILayout.Button("PHYS");
             }
             else if (SlowMoController.Instance.IsSlowMo)
             {
-                returnButton = GUILayout.Button( "SLOWMO" );
+                returnButton = GUILayout.Button("SLOWMO");
             }
             else
             {
-                GUILayout.Label( "NORMAL" );
+                GUILayout.Label("NORMAL");
             }
             if (returnButton)
             {
@@ -721,7 +732,7 @@ namespace TimeControl
 
         private void GUIPauseOrResumeButton()
         {
-            if (GUILayout.Button( (TimeController.Instance.IsTimeControlPaused ? "Resume" : "Pause"), GUILayout.Width( 60 ) ))
+            if (GUILayout.Button((TimeController.Instance.IsTimeControlPaused ? "Resume" : "Pause"), GUILayout.Width(60)))
             {
                 TimeController.Instance?.TogglePause();
             }
@@ -729,7 +740,7 @@ namespace TimeControl
 
         private void GUITimeStepButton()
         {
-            if (GUILayout.Button( ">", GUILayout.Width( 20 ) ))
+            if (GUILayout.Button(">", GUILayout.Width(20)))
             {
                 TimeController.Instance?.IncrementTimeStep();
             }

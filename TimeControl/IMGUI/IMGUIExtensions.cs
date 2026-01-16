@@ -27,7 +27,7 @@ namespace TimeControl
             if (comboLabel != null && comboLabel != "")
                 GUILayout.Label( comboLabel );
 
-            GUILayout.BeginHorizontal();
+                        using (new GUILayout.HorizontalScope())
             {
                 // Text Box to enter values
                 fieldStr = GUILayout.TextField( backingFieldStr, GUILayout.Width( 35 ) );
@@ -49,7 +49,7 @@ namespace TimeControl
                     updateBackingField( fieldFloat );
                 }
             }
-            GUILayout.EndHorizontal();
+            
         }
 
         public static void floatTextBoxSliderPlusMinus(string comboLabel, float fbacking, float sliderMin, float sliderMax, float increment, Action<float> updateBackingField, Func<float, float> modifyField = null, bool reverse = false)
@@ -63,7 +63,7 @@ namespace TimeControl
                 GUILayout.Label( comboLabel );
             }
 
-            GUILayout.BeginHorizontal();
+                        using (new GUILayout.HorizontalScope())
             {
                 // Text Box to enter values
                 fStr = GUILayout.TextField( backingStr, GUILayout.Width( 35 ) );
@@ -127,7 +127,7 @@ namespace TimeControl
                 }
 
             }
-            GUILayout.EndHorizontal();
+            
         }
 
         public static void floatTextBoxSliderPlusMinusWithButtonList(string comboLabel, float fbacking, float sliderMin, float sliderMax, float increment, Action<float> updateBackingField, List<float> immediateButtons, Func<float, float> modifyField = null, bool reverse = false)
@@ -141,7 +141,7 @@ namespace TimeControl
                 GUILayout.Label( comboLabel );
             }
 
-            GUILayout.BeginHorizontal();
+                        using (new GUILayout.HorizontalScope())
             {
                 // Text Box to enter values
                 fStr = GUILayout.TextField( backingStr, GUILayout.Width( 35 ) );
@@ -229,7 +229,7 @@ namespace TimeControl
                     }
                 }
             }
-            GUILayout.EndHorizontal();
+            
         }
     }
 }

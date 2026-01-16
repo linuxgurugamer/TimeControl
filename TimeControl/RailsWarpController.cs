@@ -42,7 +42,13 @@ namespace TimeControl
 
         private List<float> defaultWarpRates;
         private List<float> customWarpRates;
+
+        private bool disableECAtHighWarp = false;
+        private int ecIndexDisable = 7;
+
         private List<float> newCustomWarpRates;
+        private bool newDisableECAtHighWarp = false;
+        private int newEcIndexDisable = 7;
 
         private Dictionary<CelestialBody, List<float>> defaultAltitudeLimits;
         private Dictionary<CelestialBody, List<float>> customAltitudeLimits;
@@ -239,6 +245,10 @@ namespace TimeControl
             }
         }
 
+        public bool DisableECAtHighWarp {  get { return disableECAtHighWarp; } set {  disableECAtHighWarp = value; } }
+        public int EcIndexDisable {  get { return ecIndexDisable; } set { ecIndexDisable = value; } }
+
+
         /// <summary>
         /// Returns a copy of the default altitude limits for a specific celestial body
         /// </summary>
@@ -387,6 +397,8 @@ namespace TimeControl
 
                 newCustomWarpRates = customWarpRates.ToList();
                 newCustomAltitudeLimits = new Dictionary<CelestialBody, List<float>>();
+                newDisableECAtHighWarp = disableECAtHighWarp;
+                newEcIndexDisable = ecIndexDisable;
                 foreach (var kp in customAltitudeLimits)
                 {
                     newCustomAltitudeLimits.Add( kp.Key, kp.Value.ToList() );
@@ -413,6 +425,8 @@ namespace TimeControl
         #endregion MonoBehavior
 
         #region GameEvents
+        internal bool autoDisable = false;
+
         private void onTimeWarpRateChanged()
         {
             const string logBlockName = nameof( RailsWarpController ) + "." + nameof( onTimeWarpRateChanged );
@@ -422,6 +436,29 @@ namespace TimeControl
                 {
                     ResetMaximumDeltaTime();
                 }
+
+                if (DisableECAtHighWarp)
+                {
+                    if (TimeWarp.fetch.current_rate_index >= EcIndexDisable-1)
+                    {
+                        if (!CheatOptions.InfiniteElectricity)
+                        {
+                            CheatOptions.InfiniteElectricity = true;
+                            autoDisable = true;
+                            ScreenMessages.PostScreenMessage("Disabling EC Usage", 5);
+                        }
+                    }
+                    else
+                    {
+                        if (autoDisable)
+                        {
+                            CheatOptions.InfiniteElectricity = false;
+                            autoDisable = false;
+                            ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
+                        }
+                    }
+                }
+
             }
         }
         #endregion GameEvents
@@ -440,6 +477,8 @@ namespace TimeControl
 
                 customWarpRates.Clear();
                 customWarpRates.AddRange( newCustomWarpRates );
+                DisableECAtHighWarp = newDisableECAtHighWarp;
+                EcIndexDisable = newEcIndexDisable;
 
                 customAltitudeLimits.Clear();
                 foreach (var kp in newCustomAltitudeLimits)
@@ -584,7 +623,7 @@ namespace TimeControl
             using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
             {
                 ThrowExceptionIfNotReady( logBlockName );
-                SetCustomWarpRates( defaultWarpRates );
+                SetCustomWarpRates( defaultWarpRates, false, 7 );
             }
         }
 
@@ -680,9 +719,11 @@ namespace TimeControl
         /// <param name="wr">Must have between 8 and 99 elements</param>
         /// <exception cref="ArgumentNullException">Thrown when parameter <paramref name="wr"/> is null</exception>
         /// <exception cref="ArgumentException">Thrown when parameter <paramref name="wr"/> has too few or too many elements</exception>
-        public void SetCustomWarpRates(List<float> wr)
+        public void SetCustomWarpRates(List<float> wr, bool newDisableECAtHighWarp, int newEcIndexDisable)
         {
             const string logBlockName = nameof( RailsWarpController ) + "." + nameof( SetCustomWarpRates );
+            this.newDisableECAtHighWarp = newDisableECAtHighWarp;
+            this.newEcIndexDisable = newEcIndexDisable;
             using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
             {
                 if (wr == null)
@@ -831,7 +872,7 @@ namespace TimeControl
                     9203544f   // 1 Kerbal-Year
                 };
 
-                this.SetCustomWarpRates( newWr );
+                this.SetCustomWarpRates( newWr , true, 7);
             }
         }
 
@@ -863,7 +904,7 @@ namespace TimeControl
                     31536000f  // 365 earth-days / 1 earth-year
                 };
 
-                this.SetCustomWarpRates( newWr );
+                this.SetCustomWarpRates( newWr , true, 7);
             }
         }
 
@@ -965,7 +1006,7 @@ namespace TimeControl
                 {
                     const string message = "No custom warp rates node in config. Using defaults.";
                     Log.Warning( message, logBlockName );
-                    SetCustomWarpRates( defaultWarpRates );
+                    SetCustomWarpRates( defaultWarpRates , false, 7);
                     return;
                 }
 
@@ -994,9 +1035,14 @@ namespace TimeControl
                     return;
                 }
 
+                if (cn.HasValue("DisableECAtHighWarp"))
+                    DisableECAtHighWarp = bool.Parse(cn.GetValue("DisableECAtHighWarp"));
+                if (cn.HasValue("EcIndexDisable"))
+                    EcIndexDisable = int.Parse(cn.GetValue("EcIndexDisable"));
+
                 try
                 {
-                    SetCustomWarpRates( ltcwr );
+                    SetCustomWarpRates( ltcwr, DisableECAtHighWarp, EcIndexDisable);
                 }
                 catch (Exception ex)
                 {
@@ -1131,6 +1177,10 @@ namespace TimeControl
                 {
                     customWarpRatesNode.AddValue( "customWarpRate" + i, customWarpRates[i] );
                 }
+                cn.AddValue("DisableECAtHighWarp", DisableECAtHighWarp);
+                cn.AddValue("EcIndexDisable", EcIndexDisable);
+                Log.Trace($"DisableECAtHighWarp: {DisableECAtHighWarp}");
+                Log.Trace($"EcIndexDisable: {EcIndexDisable}");
             }
         }
 

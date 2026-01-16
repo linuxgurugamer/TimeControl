@@ -1,16 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36804.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeControl", "TimeControl\TimeControl.csproj", "{35AEE226-1A0A-4008-AF68-39E9EC55173B}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GameData", "GameData\GameData.shproj", "{CBBB7888-E232-463D-B26E-49A9E510E735}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		buildRelease.bat = buildRelease.bat
+		Changelog.txt = Changelog.txt
+		deploy.bat = deploy.bat
+		jenkins.txt = jenkins.txt
+		LICENSE.md = LICENSE.md
+		README.md = README.md
+		TimeControl.version = TimeControl.version
+		TODO.txt = TODO.txt
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		GameData\GameData.projitems*{cbbb7888-e232-463d-b26e-49a9e510e735}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -26,5 +35,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DF4D2CDD-3DE3-4792-B36F-E9D72F5D1B70}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		GameData\GameData.projitems*{cbbb7888-e232-463d-b26e-49a9e510e735}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

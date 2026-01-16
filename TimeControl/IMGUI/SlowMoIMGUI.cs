@@ -47,50 +47,49 @@ namespace TimeControl
 
             GUI.enabled = priorGUIEnabled && (SlowMoController.Instance?.CanSlowMo ?? false);
 
-            GUILayout.BeginVertical();
+            using (new GUILayout.VerticalScope())
             {
-                SlowMoController.Instance.DeltaLocked = GUILayout.Toggle( SlowMoController.Instance.DeltaLocked, "Lock physics delta to default" );
+                SlowMoController.Instance.DeltaLocked = GUILayout.Toggle(SlowMoController.Instance.DeltaLocked, "Lock physics delta to default");
 
-                float ratePct = (float)Math.Round( SlowMoController.Instance.SlowMoRate * 100f, 0 );
-                string slowMoSliderLabel = "Slow Motion Rate: ".MemoizedConcat( ratePct.MemoizedToString().MemoizedConcat( "%" ) );
+                float ratePct = (float)Math.Round(SlowMoController.Instance.SlowMoRate * 100f, 0);
+                string slowMoSliderLabel = "Slow Motion Rate: ".MemoizedConcat(ratePct.MemoizedToString().MemoizedConcat("%"));
 
                 Action<float> updateSlowMo = delegate (float f)
                 {
-                    SlowMoController.Instance.SlowMoRate = (float)Math.Round( f / 100f, 2 );
+                    SlowMoController.Instance.SlowMoRate = (float)Math.Round(f / 100f, 2);
                 };
 
-                Func<float, float> modifySlowMo = delegate (float f) { return Mathf.Floor( f ); };
-                IMGUIExtensions.floatTextBoxSliderPlusMinus( slowMoSliderLabel, ratePct, 0f, 100f, 1f, updateSlowMo, modifySlowMo, true );
+                Func<float, float> modifySlowMo = delegate (float f) { return Mathf.Floor(f); };
+                IMGUIExtensions.floatTextBoxSliderPlusMinus(slowMoSliderLabel, ratePct, 0f, 100f, 1f, updateSlowMo, modifySlowMo, true);
 
-                GUILayout.Label( "", GUILayout.Height( 5 ) );
+                GUILayout.Label("", GUILayout.Height(5));
 
                 sharedGUI.GUIThrottleControl();
             }
-            GUILayout.EndVertical();
 
             GUI.enabled = priorGUIEnabled;
         }
 
         private void GUIButtons()
         {
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
                 if (!SlowMoController.Instance.IsSlowMo)
                 {
-                    if (GUILayout.Button( "Activate Slow-Motion" ))
+                    if (GUILayout.Button("Activate Slow-Motion"))
                     {
                         SlowMoController.Instance.ActivateSlowMo();
                     }
                 }
                 else
                 {
-                    if (GUILayout.Button( "Deactivate Slow-Motion" ))
+                    if (GUILayout.Button("Deactivate Slow-Motion"))
                     {
                         SlowMoController.Instance.DeactivateSlowMo();
                     }
                 }
             }
-            GUILayout.EndHorizontal();
+
         }
 
         #endregion

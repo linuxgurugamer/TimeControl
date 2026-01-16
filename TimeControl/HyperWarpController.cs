@@ -500,6 +500,14 @@ namespace TimeControl
                 }
 
                 DeactivateHyper();
+
+                if (RailsWarpController.Instance != null && RailsWarpController.Instance.autoDisable)
+                {
+                    CheatOptions.InfiniteElectricity = false;
+                    RailsWarpController.Instance.autoDisable = false;
+                    ScreenMessages.PostScreenMessage("Enabling EC Usage", 5);
+                }
+
             }
         }
 

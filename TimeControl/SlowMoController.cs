@@ -391,6 +391,7 @@ namespace TimeControl
                 }
 
                 DeactivateSlowMo();
+
             }
         }
 

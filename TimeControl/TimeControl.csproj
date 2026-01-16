@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TimeControl</RootNamespace>
     <AssemblyName>TimeControl</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -22,9 +22,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyVersion.cs">
@@ -34,6 +36,7 @@
     </Compile>
     <Compile Include="IMGUI\KeyBindingsAddIMGUI.cs" />
     <Compile Include="IMGUI\HyperEditorIMGUI.cs" />
+    <Compile Include="InstallChecker.cs" />
     <Compile Include="KeyBindings\HyperDeactivate.cs" />
     <Compile Include="KeyBindings\HyperActivate.cs" />
     <Compile Include="KeyBindings\HyperRateChangeToHigherRate.cs" />
@@ -95,6 +98,7 @@
     <Compile Include="Toolbars.cs" />
     <Compile Include="PerformanceManager.cs" />
     <Compile Include="ModIntegration\BlizzyToolbar\BlizzyToolbarWrapper.cs" />
+    <Compile Include="ToolTips.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AssemblyVersion.tt">
@@ -103,28 +107,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Assembly-CSharp.1.10.1\lib\Assembly-CSharp.dll</HintPath>
+    <Reference Include="$(KSPDIR)\KSP_x64_Data\Managed\Assembly*.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(KSPDIR)\KSP_x64_Data\Managed\UnityEngine*.dll">
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnityEngine.1.10.1\lib\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnityEngine.AnimationModule.1.10.1\lib\UnityEngine.AnimationModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnityEngine.CoreModule.1.10.1\lib\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnityEngine.IMGUIModule.1.10.1\lib\UnityEngine.IMGUIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnityEngine.InputLegacyModule.1.10.1\lib\UnityEngine.InputLegacyModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnityEngine.UI.1.10.1\lib\UnityEngine.UI.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -134,12 +123,6 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-  </PropertyGroup>
-  <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" />
-  <PropertyGroup>
-    <TransformOnBuild>true</TransformOnBuild>
-    <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
-    <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
   </PropertyGroup>
   <!-- Make the property available to the visual studio build: -->
   <PropertyGroup>
@@ -156,34 +139,33 @@
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy  "$(TargetPath)" $(SolutionDir)\GameData\TimeControl
+    <PostBuildEvent>
+set KSPDIR=$(KSPDIR)
 
-if $(ConfigurationName) == Debug goto :debug
+IF "%25KSPDIR%25"=="" (
 
-:release
+	ECHO Configuration error - KSPDIR not specified in project.
 
-goto :exit
+	ECHO Either set KSPDIR environment variable or edit BetterLoadSaveGame.Common.props
 
-:debug
+	PAUSE
 
-SET KSPTest=L:\KSP\KSP1.10.1-test
+	GOTO DONE
 
-SET GameDataTarget=%25KSPTest%25\GameData\TimeControl
-IF EXIST %25GameDataTarget%25 (
-   RMDIR /S /Q "%25GameDataTarget%25"
 )
 
-robocopy /E $(SolutionDir)\GameData\TimeControl "%25GameDataTarget%25"
-copy  "$(TargetPath)" "%25GameDataTarget%25"
+start /D $(SolutionDir) /WAIT deploy.bat  $(TargetDir) $(TargetFileName) $(TargetName)
 
-goto :exit
+if $(ConfigurationName) == Release (	
 
-:exit
-exit 0</PostBuildEvent>
+	start /D $(SolutionDir) /WAIT buildRelease.bat $(TargetDir) $(TargetFileName) $(TargetName)
+
+)
+
+</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>"$(DevEnvDir)\texttransform.exe" "$(ProjectDir)AssemblyVersion.tt"</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

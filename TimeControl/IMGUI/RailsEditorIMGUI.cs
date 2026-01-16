@@ -11,6 +11,9 @@ namespace TimeControl
         private bool SOISelect = false;
 
         private List<float> warpRates = null;
+        private bool disableECAtHighWarp;
+        private int ecIndexDisable;
+
         private Dictionary<CelestialBody, List<float>> altitudeLimits;
 
         private CelestialBody selectedGUISOI = null;
@@ -29,7 +32,7 @@ namespace TimeControl
 
             if (!GlobalSettings.IsReady)
             {
-                Log.Error( "Global Settings not ready. Cannot create Rails Editor GUI." );
+                Log.Error("Global Settings not ready. Cannot create Rails Editor GUI.");
                 throw new InvalidOperationException();
             }
 
@@ -46,20 +49,20 @@ namespace TimeControl
 
         private void UnsubscribeEvents()
         {
-            OnTimeControlCustomWarpRatesChangedEvent?.Remove( OnTimeControlCustomWarpRatesChanged );
+            OnTimeControlCustomWarpRatesChangedEvent?.Remove(OnTimeControlCustomWarpRatesChanged);
         }
 
         private void SubscribeEvents()
         {
-            OnTimeControlCustomWarpRatesChangedEvent = GameEvents.FindEvent<EventData<bool>>( nameof( TimeControlEvents.OnTimeControlCustomWarpRatesChanged ) );
-            OnTimeControlCustomWarpRatesChangedEvent?.Add( OnTimeControlCustomWarpRatesChanged );
+            OnTimeControlCustomWarpRatesChangedEvent = GameEvents.FindEvent<EventData<bool>>(nameof(TimeControlEvents.OnTimeControlCustomWarpRatesChanged));
+            OnTimeControlCustomWarpRatesChangedEvent?.Add(OnTimeControlCustomWarpRatesChanged);
         }
 
 
         private void OnTimeControlCustomWarpRatesChanged(bool d)
         {
-            const string logBlockName = nameof( RailsEditorIMGUI ) + "." + nameof( OnTimeControlCustomWarpRatesChanged );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(RailsEditorIMGUI) + "." + nameof(OnTimeControlCustomWarpRatesChanged);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (!RailsWarpController.IsReady || !TimeController.IsReady)
                 {
@@ -67,6 +70,8 @@ namespace TimeControl
                 }
 
                 warpRates = RailsWarpController.Instance.GetCustomWarpRates();
+                disableECAtHighWarp = RailsWarpController.Instance.DisableECAtHighWarp;
+                ecIndexDisable = RailsWarpController.Instance.EcIndexDisable;
 
                 if (selectedGUISOI == null)
                 {
@@ -74,14 +79,14 @@ namespace TimeControl
                     priorGUISOI = selectedGUISOI;
                 }
 
-                if (!altitudeLimits.ContainsKey( selectedGUISOI ))
+                if (!altitudeLimits.ContainsKey(selectedGUISOI))
                 {
-                    altitudeLimits.Add( selectedGUISOI, null );
+                    altitudeLimits.Add(selectedGUISOI, null);
                 }
 
                 foreach (CelestialBody cb in altitudeLimits.Keys.ToList())
                 {
-                    altitudeLimits[cb] = RailsWarpController.Instance?.GetCustomAltitudeLimitsForBody( cb );
+                    altitudeLimits[cb] = RailsWarpController.Instance?.GetCustomAltitudeLimitsForBody(cb);
                 }
             }
         }
@@ -104,19 +109,21 @@ namespace TimeControl
             if (warpRates == null)
             {
                 warpRates = RailsWarpController.Instance?.GetCustomWarpRates();
+                disableECAtHighWarp = RailsWarpController.Instance.DisableECAtHighWarp;
+                ecIndexDisable = RailsWarpController.Instance.EcIndexDisable;
             }
 
-            if (!altitudeLimits.ContainsKey( selectedGUISOI ))
+            if (!altitudeLimits.ContainsKey(selectedGUISOI))
             {
-                altitudeLimits.Add( selectedGUISOI, null );
+                altitudeLimits.Add(selectedGUISOI, null);
             }
 
             if (altitudeLimits[selectedGUISOI] == null)
             {
-                altitudeLimits[selectedGUISOI] = RailsWarpController.Instance?.GetCustomAltitudeLimitsForBody( selectedGUISOI );
+                altitudeLimits[selectedGUISOI] = RailsWarpController.Instance?.GetCustomAltitudeLimitsForBody(selectedGUISOI);
             }
 
-            GUILayout.BeginVertical();
+            using (new GUILayout.VerticalScope())
             {
                 GUIHeader();
 
@@ -124,11 +131,10 @@ namespace TimeControl
 
                 GUIEditor();
 
-                GUILayout.Label( "", GUILayout.Height( 5 ) );
+                GUILayout.Label("", GUILayout.Height(5));
 
                 GUIActions();
             }
-            GUILayout.EndVertical();
 
             GUI.enabled = guiPriorEnabled;
         }
@@ -137,14 +143,14 @@ namespace TimeControl
         {
             bool guiPriorEnabled = GUI.enabled;
 
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
-                GUILayout.Label( "Current SOI: " + TimeController.Instance.CurrentGameSOI.name );
+                GUILayout.Label("Current SOI: " + TimeController.Instance.CurrentGameSOI.name);
                 GUILayout.FlexibleSpace();
             }
-            GUILayout.EndHorizontal();
 
-            GUILayout.Label( "", GUILayout.Height( 5 ) );
+
+            GUILayout.Label("", GUILayout.Height(5));
 
             GUI.enabled = guiPriorEnabled;
         }
@@ -153,94 +159,94 @@ namespace TimeControl
         {
             bool guiPriorEnabled = GUI.enabled;
 
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
-                if (GUILayout.Button( "Reset Warp Rates to Defaults" ))
+                if (GUILayout.Button("Reset Warp Rates to Defaults"))
                 {
                     RailsWarpController.Instance.ResetWarpRates();
                 }
             }
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
+
+            using (new GUILayout.HorizontalScope())
             {
-                if (GUILayout.Button( "Warp Rates: Kerbin-Multiples" ))
+                if (GUILayout.Button("Warp Rates: Kerbin-Multiples"))
                 {
                     RailsWarpController.Instance.SetWarpRatesToKerbinTimeMultiples();
                 }
             }
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
+
+            using (new GUILayout.HorizontalScope())
             {
-                if (GUILayout.Button( "Warp Rates: Earth-Multiples" ))
+                if (GUILayout.Button("Warp Rates: Earth-Multiples"))
                 {
                     RailsWarpController.Instance.SetWarpRatesToEarthTimeMultiples();
                 }
             }
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
+
+            using (new GUILayout.HorizontalScope())
             {
-                if (GUILayout.Button( "Reset ".MemoizedConcat( selectedGUISOI.name ).MemoizedConcat( " Altitude Limits" ) ))
+                if (GUILayout.Button("Reset ".MemoizedConcat(selectedGUISOI.name).MemoizedConcat(" Altitude Limits")))
                 {
-                    RailsWarpController.Instance.ResetAltitudeLimits( selectedGUISOI );
+                    RailsWarpController.Instance.ResetAltitudeLimits(selectedGUISOI);
                 }
             }
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
+
+            using (new GUILayout.HorizontalScope())
             {
-                if (GUILayout.Button( "Reset All Altitude Limits" ))
+                if (GUILayout.Button("Reset All Altitude Limits"))
                 {
                     RailsWarpController.Instance.ResetAltitudeLimits();
                 }
             }
-            GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
+
+            using (new GUILayout.HorizontalScope())
             {
-                GUILayout.Label( "Set ".MemoizedConcat( selectedGUISOI.name ).MemoizedConcat( " Altitudes to Atmo or " ), GUILayout.Width( 200 ) );
+                GUILayout.Label("Set ".MemoizedConcat(selectedGUISOI.name).MemoizedConcat(" Altitudes to Atmo or "), GUILayout.Width(200));
                 string curSAltitudeHeight = this.altitudeHeight.MemoizedToString();
-                this.sAltitudeHeight = GUILayout.TextField( this.sAltitudeHeight, GUILayout.Width( 60 ) );
+                this.sAltitudeHeight = GUILayout.TextField(this.sAltitudeHeight, GUILayout.Width(60));
                 if (this.sAltitudeHeight != curSAltitudeHeight)
                 {
-                    this.altitudeHeight = float.TryParse( this.sAltitudeHeight, out float alH ) ? alH : -1;
+                    this.altitudeHeight = float.TryParse(this.sAltitudeHeight, out float alH) ? alH : -1;
                     if (this.altitudeHeight >= 0)
                     {
                         GlobalSettings.Instance.ResetAltitudeToValue = altitudeHeight;
                     }
                 }
-                GUILayout.Label( "m" );
+                GUILayout.Label("m");
 
                 GUI.enabled = guiPriorEnabled && this.altitudeHeight >= 0;
-                if (GUILayout.Button( "SET", GUILayout.Width( 40 ) ))
+                if (GUILayout.Button("SET", GUILayout.Width(40)))
                 {
-                    RailsWarpController.Instance.SetAltitudeLimitsToAtmoForBody( selectedGUISOI, this.altitudeHeight );
+                    RailsWarpController.Instance.SetAltitudeLimitsToAtmoForBody(selectedGUISOI, this.altitudeHeight);
                 }
                 GUI.enabled = guiPriorEnabled;
             }
-            GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
+
+            using (new GUILayout.HorizontalScope())
             {
-                GUILayout.Label( "Set All Altitudes to Atmo or ", GUILayout.Width( 200 ) );
+                GUILayout.Label("Set All Altitudes to Atmo or ", GUILayout.Width(200));
                 string curSAltitudeHeight = this.altitudeHeight.MemoizedToString();
-                this.sAltitudeHeight = GUILayout.TextField( this.sAltitudeHeight, GUILayout.Width( 60 ) );
+                this.sAltitudeHeight = GUILayout.TextField(this.sAltitudeHeight, GUILayout.Width(60));
                 if (this.sAltitudeHeight != curSAltitudeHeight)
                 {
-                    this.altitudeHeight = float.TryParse( this.sAltitudeHeight, out float alH ) ? alH : -1;
+                    this.altitudeHeight = float.TryParse(this.sAltitudeHeight, out float alH) ? alH : -1;
                     if (this.altitudeHeight >= 0)
                     {
                         GlobalSettings.Instance.ResetAltitudeToValue = altitudeHeight;
                     }
                 }
-                GUILayout.Label( "m" );
+                GUILayout.Label("m");
 
                 GUI.enabled = guiPriorEnabled && this.altitudeHeight >= 0;
-                if (GUILayout.Button( "SET", GUILayout.Width( 40 ) ))
+                if (GUILayout.Button("SET", GUILayout.Width(40)))
                 {
-                    RailsWarpController.Instance.SetAltitudeLimitsToAtmo( this.altitudeHeight );
+                    RailsWarpController.Instance.SetAltitudeLimitsToAtmo(this.altitudeHeight);
                 }
                 GUI.enabled = guiPriorEnabled;
             }
-            GUILayout.EndHorizontal();
+
 
 
             GUI.enabled = guiPriorEnabled;
@@ -251,42 +257,71 @@ namespace TimeControl
         {
             bool guiPriorEnabled = GUI.enabled;
 
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
             {
                 GUI.enabled = guiPriorEnabled && (warpRatesChangedByGUI || altitudeLimitsChangedByGUI);
-                if (GUILayout.Button( "Apply Changes" ))
+                if (GUILayout.Button("Apply Changes"))
                 {
                     if (warpRatesChangedByGUI)
                     {
-                        RailsWarpController.Instance?.SetCustomWarpRates( warpRates );
+                        RailsWarpController.Instance?.SetCustomWarpRates(warpRates, disableECAtHighWarp, ecIndexDisable);
+                        //RailsWarpController.Instance.DisableECAtHighWarp = disableECAtHighWarp;
+                        //RailsWarpController.Instance.EcIndexDisable = ecIndexDisable;
+
                         warpRatesChangedByGUI = false;
                     }
                     if (altitudeLimitsChangedByGUI)
                     {
                         foreach (var cb in altitudeLimits.Keys)
                         {
-                            RailsWarpController.Instance?.SetCustomAltitudeLimitsForBody( cb, altitudeLimits[cb] );
+                            RailsWarpController.Instance?.SetCustomAltitudeLimitsForBody(cb, altitudeLimits[cb]);
                         }
                         altitudeLimitsChangedByGUI = false;
                     }
                 }
                 GUI.enabled = guiPriorEnabled;
             }
-            GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal();
+            using (new GUILayout.HorizontalScope())
+            {
+                bool b = GUILayout.Toggle(disableECAtHighWarp, "");
+                if (b != disableECAtHighWarp)
+                {
+                    disableECAtHighWarp = b;
+                    warpRatesChangedByGUI = true;
+                }
+                GUILayout.Label(" Disable EC at high warp");
+                GUILayout.FlexibleSpace();
+                if (disableECAtHighWarp)
+                {
+                    GUILayout.Label("Disable Index: ");
+                    if (GUILayout.Button("<", GUILayout.Width(20)) && ecIndexDisable >2 )
+                    {
+                        ecIndexDisable--;
+                        warpRatesChangedByGUI = true;
+                    }
+                    GUILayout.Label($" {ecIndexDisable.ToString()} ");
+                    if (GUILayout.Button(">", GUILayout.Width(20)) && ecIndexDisable < warpRates.Count)
+                    {
+                        ecIndexDisable++;
+                        warpRatesChangedByGUI = true;
+                    }
+                    GUILayout.FlexibleSpace();
+                }
+            }
+
+            using (new GUILayout.HorizontalScope())
             {
                 GUIWarpLevelsButtons();
-                GUILayout.Label( "Altitude Limit" );
+                GUILayout.Label("Altitude Limit");
                 GUILayout.FlexibleSpace();
                 string s = selectedGUISOI.name;
-                SOISelect = GUILayout.Toggle( SOISelect, s, "button", GUILayout.Width( 80 ) );
+                SOISelect = GUILayout.Toggle(SOISelect, s, "button", GUILayout.Width(80));
             }
-            GUILayout.EndHorizontal();
 
-            warpScroll = GUILayout.BeginScrollView( warpScroll, GUILayout.Height( 210 ) );
+            warpScroll = GUILayout.BeginScrollView(warpScroll, GUILayout.Height(210));
             {
-                GUILayout.BeginHorizontal();
+                using (new GUILayout.HorizontalScope())
                 {
                     GUIWarpRatesList();
                     if (!SOISelect)
@@ -294,7 +329,6 @@ namespace TimeControl
                     else
                         GUISoiSelector();
                 }
-                GUILayout.EndHorizontal();
             }
             GUILayout.EndScrollView();
 
@@ -305,17 +339,17 @@ namespace TimeControl
         {
             bool guiPriorEnabled = GUI.enabled;
 
-            GUILayout.BeginHorizontal( GUILayout.Width( 175 ) );
+            using (new GUILayout.HorizontalScope(GUILayout.Width(175)))
             {
-                GUILayout.Label( "Warp Rate" );
-                if (GUILayout.Button( "+", GUILayout.Width( 20 ) ))
+                GUILayout.Label("Warp Rate");
+                if (GUILayout.Button("+", GUILayout.Width(20)))
                 {
                     if (RailsWarpController.Instance.NumberOfWarpLevels < 99)
                     {
                         RailsWarpController.Instance.AddWarpLevel();
                     }
                 }
-                if (GUILayout.Button( "-", GUILayout.Width( 20 ) ))
+                if (GUILayout.Button("-", GUILayout.Width(20)))
                 {
                     if (RailsWarpController.Instance.NumberOfWarpLevels > 8)
                     {
@@ -323,7 +357,6 @@ namespace TimeControl
                     }
                 }
             }
-            GUILayout.EndHorizontal();
 
             GUI.enabled = guiPriorEnabled;
         }
@@ -339,26 +372,25 @@ namespace TimeControl
                 return;
             }
 
-            GUILayout.BeginVertical( GUILayout.Width( 20 ) );
+            using (new GUILayout.VerticalScope(GUILayout.Width(20)))
             {
                 for (int i = 0; i < WRCount; i++)
                 {
-                    GUILayout.Label( i + 1 + ":" );
+                    GUILayout.Label(i + 1 + ":");
                 }
             }
-            GUILayout.EndVertical();
 
-            GUILayout.BeginVertical( GUILayout.Width( 145 ) );
+            using (new GUILayout.VerticalScope(GUILayout.Width(145)))
             {
                 for (int i = 0; i < WRCount; i++)
                 {
                     string curRate = warpRates[i].MemoizedToString();
                     GUI.enabled = guiPriorEnabled && (i != 0);
-                    string newRate = GUILayout.TextField( curRate, 10 );
+                    string newRate = GUILayout.TextField(curRate, 10);
                     GUI.enabled = guiPriorEnabled;
                     if (newRate != curRate)
                     {
-                        float rateConv = float.TryParse( newRate, out rateConv ) ? rateConv : -1;
+                        float rateConv = float.TryParse(newRate, out rateConv) ? rateConv : -1;
                         if (rateConv != -1)
                         {
                             warpRatesChangedByGUI = true;
@@ -368,7 +400,6 @@ namespace TimeControl
                     }
                 }
             }
-            GUILayout.EndVertical();
 
             GUI.enabled = guiPriorEnabled;
         }
@@ -383,17 +414,17 @@ namespace TimeControl
                 return;
             }
 
-            GUILayout.BeginVertical( GUILayout.Width( 145 ) );
+            using (new GUILayout.VerticalScope(GUILayout.Width(145)))
             {
                 for (int i = 0; i < ALCount; i++)
                 {
                     string curAL = altitudeLimits[selectedGUISOI][i].MemoizedToString();
                     GUI.enabled = guiPriorEnabled && (i != 0);
-                    string newAL = GUILayout.TextField( curAL, 10 );
+                    string newAL = GUILayout.TextField(curAL, 10);
                     GUI.enabled = guiPriorEnabled;
                     if (newAL != curAL)
                     {
-                        float alConv = float.TryParse( newAL, out alConv ) ? alConv : -1;
+                        float alConv = float.TryParse(newAL, out alConv) ? alConv : -1;
                         if (alConv != -1)
                         {
                             altitudeLimitsChangedByGUI = true;
@@ -403,7 +434,6 @@ namespace TimeControl
                     }
                 }
             }
-            GUILayout.EndVertical();
 
             GUI.enabled = guiPriorEnabled;
         }
@@ -412,9 +442,9 @@ namespace TimeControl
         {
             bool guiPriorEnabled = GUI.enabled;
 
-            GUILayout.BeginVertical( GUILayout.Width( 150 ) );
+            using (new GUILayout.VerticalScope(GUILayout.Width(150)))
             {
-                if (GUILayout.Button( "Current" ))
+                if (GUILayout.Button("Current"))
                 {
                     selectedGUISOI = TimeController.Instance.CurrentGameSOI;
                     SOISelect = false;
@@ -424,7 +454,7 @@ namespace TimeControl
                 for (int i = 0; i < FlightGlobals.Bodies.Count; i++)
                 {
                     CelestialBody c = FlightGlobals.Bodies[i];
-                    if (GUILayout.Button( c.name ))
+                    if (GUILayout.Button(c.name))
                     {
                         selectedGUISOI = c;
                         SOISelect = false;
@@ -432,7 +462,6 @@ namespace TimeControl
                     }
                 }
             }
-            GUILayout.EndVertical();
 
             GUI.enabled = guiPriorEnabled;
         }
