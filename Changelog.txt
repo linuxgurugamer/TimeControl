@@ -5,14 +5,12 @@ Changelog
 	Compiled complete list of changes and added to changelog
 	Added tooltips to buttons in top bar 
 	Added option to enable infinite EC when timewarp gets too high
-
 	Added new dependencies, ClickThroughBlocker & ToolbarController
 	Added support for ClickThroughBlocker
 	Added support for ToolbarController
 	Updated toolbar buttons to show disabled and enabled
 	Removed settings buttons to control which toolbar buttons to use
 	Added option to control whether or not the EC message will be shown
-
 	Added option to use KSP skin (in stock settings page)
 
 2.11.0
