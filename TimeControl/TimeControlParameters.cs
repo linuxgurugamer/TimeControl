@@ -39,6 +39,7 @@ namespace TimeControl
 
         [GameParameters.CustomIntParameterUI( "Key Repeat Start", minValue = 0, maxValue = 1000, stepSize = 100, toolTip = "For repeatable key bindings, the time in milliseconds the key must be held down before starting to repeat." )]
         public int KeyRepeatStart = 500;
+
         [GameParameters.CustomIntParameterUI( "Key Repeat Interval", minValue = 1, maxValue = 60, stepSize = 1, toolTip = "For repeatable key bindings, the number of times key is repeated per second." )]
         public int KeyRepeatInterval = 15;
 
@@ -48,9 +49,12 @@ namespace TimeControl
         [GameParameters.CustomParameterUI("Supress the Flight Results Dialog", toolTip = "")]
         public bool SupressFlightResultsDialog = false;
 
+        [GameParameters.CustomParameterUI("Use KSP Skin", toolTip = "")]
+        public bool useKSPskin = false;
+
         //[GameParameters.CustomParameterUI("Custom TimeControl Date Formatter", toolTip = "")]
         //public bool UseCustomDateTimeFormatter = true;
-        
+
         public override bool Enabled(MemberInfo member, GameParameters parameters)
         {
             /*

@@ -379,7 +379,8 @@ namespace TimeControl
             }
 
             UnityEngine.GUI.skin = null;
-            //GUI.skin = HighLogic.Skin;
+            if (HighLogic.CurrentGame.Parameters.CustomParams<TimeControlParameterNode>().useKSPskin)
+                GUI.skin = HighLogic.Skin;
             if (WindowVisible)
             {
                 //if (PerformanceManager.IsReady)
