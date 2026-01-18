@@ -1,6 +1,0 @@
-
-Add toggle for stock skin (info page?)
-
-For new forum page, get images from here:
-https://web.archive.org/web/20240210163250/https://forum.kerbalspaceprogram.com/topic/143763-112-time-control-211/
-https://i.imgur.com/OZ6FZcj.png
