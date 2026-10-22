@@ -1,17 +1,18 @@
-﻿using UnityEngine;
+﻿using KSP.UI.Dialogs;
 using System.Collections;
-using KSP.UI.Dialogs;
 using System.Linq;
+using UnityEngine;
+
 
 namespace TimeControl
 {
 
-    [KSPAddon( KSPAddon.Startup.Instantly, true )]
+    [KSPAddon(KSPAddon.Startup.Instantly, true)]
     internal class TimeController : MonoBehaviour
     {
         #region Singleton
         public static TimeController Instance { get; private set; }
-        public static bool IsReady { get; private set; } = false;        
+        public static bool IsReady { get; private set; } = false;
         #endregion
 
         #region Properties and fields  
@@ -70,8 +71,8 @@ namespace TimeControl
             {
                 if (Time.timeScale != value)
                 {
-                    Time.timeScale = value;                    
-                    TimeControlEvents.OnTimeControlTimeScaleChanged?.Fire( Time.timeScale );
+                    Time.timeScale = value;
+                    TimeControlEvents.OnTimeControlTimeScaleChanged?.Fire(Time.timeScale);
                 }
             }
         }
@@ -95,7 +96,7 @@ namespace TimeControl
                         Planetarium.fetch.fixedDeltaTime = Time.fixedDeltaTime;
                     }
 
-                    TimeControlEvents.OnTimeControlFixedDeltaTimeChanged?.Fire( Time.fixedDeltaTime );
+                    TimeControlEvents.OnTimeControlFixedDeltaTimeChanged?.Fire(Time.fixedDeltaTime);
                 }
             }
         }
@@ -124,7 +125,7 @@ namespace TimeControl
             get;
             private set;
         }
-        
+
         private bool isTimeControlPaused;
         internal bool IsTimeControlPaused
         {
@@ -141,10 +142,10 @@ namespace TimeControl
 
             set
             {
-                if (!Mathf.Approximately( value, maximumDeltaTimeSetting ))
+                if (!Mathf.Approximately(value, maximumDeltaTimeSetting))
                 {
                     // round to 2 decimal points, then clamp between min and max
-                    float v = Mathf.Clamp( (Mathf.Round( value * 100f ) / 100f), MaximumDeltaTimeMin, MaximumDeltaTimeMax );
+                    float v = Mathf.Clamp((Mathf.Round(value * 100f) / 100f), MaximumDeltaTimeMin, MaximumDeltaTimeMax);
                     maximumDeltaTimeSetting = v;
                     MaximumDeltaTime = v;
                     GameSettings.PHYSICS_FRAME_DT_LIMIT = v;
@@ -175,29 +176,63 @@ namespace TimeControl
         #region MonoBehavior
         private void Awake()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( Awake );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(Awake);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                DontDestroyOnLoad( this );
+                DontDestroyOnLoad(this);
                 Instance = this;
             }
         }
         private void Start()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( Start );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(Start);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 defaultFixedDeltaTime = Time.fixedDeltaTime; // 0.02f
 
                 //GameEvents.OnGameSettingsApplied.Add( this.OnGameSettingsApplied );
-                GameEvents.onLevelWasLoaded.Add( this.onLevelWasLoaded );
-                GameEvents.onGamePause.Add( this.onGamePause );
-                GameEvents.onGameUnpause.Add( this.onGameUnpause );
+                GameEvents.onLevelWasLoaded.Add(this.onLevelWasLoaded);
+                GameEvents.onGamePause.Add(this.onGamePause);
+                GameEvents.onGameUnpause.Add(this.onGameUnpause);
 
-                Log.Info( nameof( TimeController ) + " is Ready!", logBlockName );
+                GameEvents.onGUIMissionControlSpawn.Add(TimePausedWindowOpen);
+                GameEvents.onGUIMissionControlDespawn.Add(TimePausedWindowClose);
+
+                GameEvents.onGUIAstronautComplexSpawn.Add(TimePausedWindowOpen);
+                GameEvents.onGUIAstronautComplexDespawn.Add(TimePausedWindowClose);
+
+                GameEvents.onGUIRnDComplexSpawn.Add(TimePausedWindowOpen);
+                GameEvents.onGUIRnDComplexDespawn.Add(TimePausedWindowClose);
+
+                GameEvents.onGUIAdministrationFacilitySpawn.Add(TimePausedWindowOpen);
+                GameEvents.onGUIAdministrationFacilityDespawn.Add(TimePausedWindowClose);
+
+                Log.Info(nameof(TimeController) + " is Ready!", logBlockName);
                 IsReady = true;
             }
         }
+
+        private bool timePausedWindow = false;
+        private bool inEditor = false;
+        private bool oldPauseSetting = false;
+
+
+        private void TimePausedWindowOpen()
+        {
+            timePausedWindow = true;
+            oldPauseSetting = isTimeControlPaused;
+        }
+
+        private void TimePausedWindowClose()
+        {
+            timePausedWindow = false;
+            if (oldPauseSetting)
+            {
+                Unpause();
+                Pause();
+            }
+        }
+
         #region Update Functions
         private void FixedUpdate()
         {
@@ -207,10 +242,32 @@ namespace TimeControl
                 PauseOnNextFixedUpdate = false;
             }
         }
+
         private void LateUpdate()
         {
             LateUpdateFlightResultsDialog();
+            if (HighLogic.LoadedSceneIsEditor || HighLogic.LoadedSceneHasPlanetarium)
+            {
+                inEditor = true;
+                if (isTimeControlPaused)
+                {
+                    Unpause();
+                    Pause();
+                }
+                oldPauseSetting = isTimeControlPaused;
+            }
+            else
+            {
+                if (inEditor)
+                {
+                    if (oldPauseSetting)
+                        Pause();
+                    inEditor = false;
+                }
+            }
         }
+
+
         private void LateUpdateFlightResultsDialog()
         {
             if (!HighLogic.LoadedSceneIsFlight)
@@ -230,27 +287,27 @@ namespace TimeControl
         #region GameEvents
         private void onGamePause()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( onGamePause );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(onGamePause);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                TimeControlEvents.OnTimeControlTimePaused?.Fire( true );
+                TimeControlEvents.OnTimeControlTimePaused?.Fire(true);
             }
         }
 
         private void onGameUnpause()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( onGameUnpause );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(onGameUnpause);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                TimeControlEvents.OnTimeControlTimeUnpaused?.Fire( true );
+                TimeControlEvents.OnTimeControlTimeUnpaused?.Fire(true);
             }
         }
-        
+
         private void onLevelWasLoaded(GameScenes gs)
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( onLevelWasLoaded );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
-            {                
+            const string logBlockName = nameof(TimeController) + "." + nameof(onLevelWasLoaded);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
+            {
                 // Retry KAC load on scene change
                 if (gs == GameScenes.FLIGHT || gs == GameScenes.SPACECENTER || gs == GameScenes.TRACKSTATION)
                 {
@@ -266,7 +323,7 @@ namespace TimeControl
                     RailsWarpController.Instance.CanRailsWarp = true;
                 }
 
-                TimeControlEvents.OnTimeControlTimeUnpaused?.Fire( true );
+                TimeControlEvents.OnTimeControlTimeUnpaused?.Fire(true);
 
                 if (RailsWarpController.Instance != null && RailsWarpController.Instance.autoDisable)
                 {
@@ -279,47 +336,47 @@ namespace TimeControl
             }
         }
         #endregion
-        
+
         #region Private Methods 
         private void SetupKACAlarms()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( SetupKACAlarms );
+            const string logBlockName = nameof(TimeController) + "." + nameof(SetupKACAlarms);
 
             KACWrapper.InitKACWrapper();
             if (KACWrapper.InstanceExists)
             {
-                StartCoroutine( CheckKACAlarms() );
-                Log.Info( "KAC Integrated With TimeControl", logBlockName );
+                StartCoroutine(CheckKACAlarms());
+                Log.Info("KAC Integrated With TimeControl", logBlockName);
             }
             else
             {
-                Log.Info( "KAC Not Integrated With TimeControl", logBlockName );
+                Log.Info("KAC Not Integrated With TimeControl", logBlockName);
             }
         }
 
         private IEnumerator CheckKACAlarms()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( CheckKACAlarms );
+            const string logBlockName = nameof(TimeController) + "." + nameof(CheckKACAlarms);
 
             while (true)
             {
-                var list = KACWrapper.KAC.Alarms.Where( f => f.AlarmTime > CurrentUT && f.AlarmType != KACWrapper.KACAPI.AlarmTypeEnum.EarthTime ).OrderBy( f => f.AlarmTime );
+                var list = KACWrapper.KAC.Alarms.Where(f => f.AlarmTime > CurrentUT && f.AlarmType != KACWrapper.KACAPI.AlarmTypeEnum.EarthTime).OrderBy(f => f.AlarmTime);
                 if (list != null && list.Count() != 0)
                 {
                     var upNextAlarm = list.First();
                     if (ClosestKACAlarm == null || ClosestKACAlarm.ID != upNextAlarm.ID)
                     {
-                        Log.Info( "Updating Next KAC Alarm", logBlockName );
+                        Log.Info("Updating Next KAC Alarm", logBlockName);
                         ClosestKACAlarm = upNextAlarm;
                     }
                 }
                 else if (ClosestKACAlarm != null)
                 {
-                    Log.Info( "Clearing Next KAC Alarm", logBlockName );
+                    Log.Info("Clearing Next KAC Alarm", logBlockName);
                     ClosestKACAlarm = null;
                 }
 
-                yield return new WaitForSeconds( 1f );
+                yield return new WaitForSeconds(1f);
             }
         }
 
@@ -331,8 +388,8 @@ namespace TimeControl
         /// </summary>
         internal void ResetTime()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( ResetFixedDeltaTime );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(ResetFixedDeltaTime);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 this.ResetTimeScale();
                 this.ResetFixedDeltaTime();
@@ -345,8 +402,8 @@ namespace TimeControl
         /// </summary>
         internal void ResetFixedDeltaTime()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( ResetFixedDeltaTime );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(ResetFixedDeltaTime);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 this.FixedDeltaTime = DefaultFixedDeltaTime;
             }
@@ -354,8 +411,8 @@ namespace TimeControl
 
         internal void ResetMaximumDeltaTime()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( ResetMaximumDeltaTime );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(ResetMaximumDeltaTime);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 MaximumDeltaTime = GameSettings.PHYSICS_FRAME_DT_LIMIT;
             }
@@ -366,8 +423,8 @@ namespace TimeControl
         /// </summary>
         internal void ResetTimeScale()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( ResetTimeScale );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(ResetTimeScale);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 this.TimeScale = 1f;
             }
@@ -375,36 +432,36 @@ namespace TimeControl
 
         public void Pause()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( Pause );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(Pause);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (!isTimeControlPaused)
-                {                    
+                {
                     Time.timeScale = 0f;
                     isTimeControlPaused = true;
-                    TimeControlEvents.OnTimeControlTimePaused?.Fire( true );
+                    TimeControlEvents.OnTimeControlTimePaused?.Fire(true);
                 }
             }
         }
 
         public void Unpause()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( Unpause );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(Unpause);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (isTimeControlPaused)
-                {                    
+                {
                     Time.timeScale = 1f;
                     isTimeControlPaused = false;
-                    TimeControlEvents.OnTimeControlTimeUnpaused?.Fire( true );
+                    TimeControlEvents.OnTimeControlTimeUnpaused?.Fire(true);
                 }
             }
         }
 
         public void TogglePause()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( TogglePause );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(TogglePause);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (this.isTimeControlPaused)
                 {
@@ -419,24 +476,24 @@ namespace TimeControl
 
         public void IncrementTimeStep()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( IncrementTimeStep );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(IncrementTimeStep);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 this.Unpause();
                 this.PauseOnNextFixedUpdate = true;
             }
         }
-        
+
         public void GoRealTime()
         {
-            const string logBlockName = nameof( TimeController ) + "." + nameof( GoRealTime );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(TimeController) + "." + nameof(GoRealTime);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 Unpause();
                 PauseOnNextFixedUpdate = false;
                 RailsWarpController.Instance?.DeactivateRails();
                 HyperWarpController.Instance?.DeactivateHyper();
-                SlowMoController.Instance?.DeactivateSlowMo();                
+                SlowMoController.Instance?.DeactivateSlowMo();
                 ResetTime();
             }
         }

@@ -409,6 +409,19 @@ namespace TimeControl
             }
         }
 
+#if false
+        private void FixedUpdate()
+        {
+            if (TimeWarp.fetch != null)
+            Log.Info("HyperWarpController.FixedUpdate, isHyperWarping: " + isHyperWarping+ ",  TimeWarp.current_rate_index: " + TimeWarp.fetch.current_rate_index +
+                ", WarpMode: " + TimeWarp.WarpMode);
+            if (isHyperWarping && TimeWarp.fetch!= null &&  TimeWarp.fetch.current_rate_index == 0)
+            {
+                isHyperWarping = false;
+            }
+        }
+#endif
+
         /*
         private void FixedUpdate()
         {
@@ -471,7 +484,7 @@ namespace TimeControl
                 }
             }
         }
-        #endregion
+#endregion
 
         #region GameEvents
         private void OnTimeControlTimePaused(bool b)
