@@ -1,11 +1,11 @@
 ﻿using System;
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace TimeControl
 {
-    [KSPAddon( KSPAddon.Startup.Instantly, true )]
+    [KSPAddon(KSPAddon.Startup.Instantly, true)]
     internal class HyperWarpController : MonoBehaviour
     {
         #region Singleton
@@ -133,7 +133,7 @@ namespace TimeControl
 
         public bool CanHyperWarp
         {
-            get => (TimeWarp.fetch != null && TimeWarp.CurrentRateIndex == 0 && (Mathf.Approximately( Time.timeScale, 1f ) || IsHyperWarping) && HighLogic.LoadedSceneIsFlight);
+            get => (TimeWarp.fetch != null && TimeWarp.CurrentRateIndex == 0 && (Mathf.Approximately(Time.timeScale, 1f) || IsHyperWarping) && HighLogic.LoadedSceneIsFlight);
         }
 
         private bool hyperPauseOnTimeReached = false;
@@ -155,10 +155,10 @@ namespace TimeControl
             get => this.maximumDeltaTime;
             set
             {
-                if (!Mathf.Approximately( this.maximumDeltaTime, value ))
+                if (!Mathf.Approximately(this.maximumDeltaTime, value))
                 {
-                    this.maximumDeltaTime = Mathf.Clamp( value, TimeController.MaximumDeltaTimeMin, TimeController.MaximumDeltaTimeMax );
-                    TimeControlEvents.OnTimeControlHyperWarpMaximumDeltaTimeChanged?.Fire( this.maximumDeltaTime );
+                    this.maximumDeltaTime = Mathf.Clamp(value, TimeController.MaximumDeltaTimeMin, TimeController.MaximumDeltaTimeMax);
+                    TimeControlEvents.OnTimeControlHyperWarpMaximumDeltaTimeChanged?.Fire(this.maximumDeltaTime);
                 }
             }
         }
@@ -171,8 +171,8 @@ namespace TimeControl
             {
                 if (!Mathf.Approximately(this.physicsAccuracy, value))
                 {
-                    this.physicsAccuracy = Mathf.Clamp( value, PhysicsAccuracyMin, PhysicsAccuracyMax ); ;
-                    TimeControlEvents.OnTimeControlHyperWarpPhysicsAccuracyChanged?.Fire( this.physicsAccuracy );
+                    this.physicsAccuracy = Mathf.Clamp(value, PhysicsAccuracyMin, PhysicsAccuracyMax); ;
+                    TimeControlEvents.OnTimeControlHyperWarpPhysicsAccuracyChanged?.Fire(this.physicsAccuracy);
                 }
             }
         }
@@ -183,14 +183,14 @@ namespace TimeControl
             get => this.maxAttemptedRate;
             set
             {
-                if (!Mathf.Approximately( this.maxAttemptedRate, value ))
+                if (!Mathf.Approximately(this.maxAttemptedRate, value))
                 {
-                    this.maxAttemptedRate = Mathf.Clamp( value, AttemptedRateMin, AttemptedRateMax );
-                    TimeControlEvents.OnTimeControlHyperWarpMaxAttemptedRateChanged?.Fire( this.maxAttemptedRate );
+                    this.maxAttemptedRate = Mathf.Clamp(value, AttemptedRateMin, AttemptedRateMax);
+                    TimeControlEvents.OnTimeControlHyperWarpMaxAttemptedRateChanged?.Fire(this.maxAttemptedRate);
                 }
             }
         }
-        
+
         private bool isHyperWarping = false;
         public bool IsHyperWarping
         {
@@ -199,7 +199,7 @@ namespace TimeControl
             {
                 if (isHyperWarping != value)
                 {
-                    isHyperWarping = value;                    
+                    isHyperWarping = value;
                 }
             }
         }
@@ -283,70 +283,70 @@ namespace TimeControl
 
         private void Awake()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( Awake );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(Awake);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                DontDestroyOnLoad( this );
+                DontDestroyOnLoad(this);
                 Instance = this;
             }
         }
 
         private void Start()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( Start );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(Start);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                StartCoroutine( Configure() );
+                StartCoroutine(Configure());
             }
         }
 
         private void OnDestroy()
         {
-            OnTimeControlDefaultFixedDeltaTimeChangedEvent?.Remove( OnTimeControlDefaultFixedDeltaTimeChanged );
-            OnTimeControlHyperWarpMaxAttemptedRateChangedEvent?.Remove( OnTimeControlHyperWarpMaxAttemptedRateChanged );
-            OnTimeControlHyperWarpPhysicsAccuracyChangedEvent?.Remove( OnTimeControlHyperWarpPhysicsAccuracyChanged );
-            OnTimeControlHyperWarpMaximumDeltaTimeChangedEvent?.Remove( OnTimeControlHyperWarpMaximumDeltaTimeChanged );
+            OnTimeControlDefaultFixedDeltaTimeChangedEvent?.Remove(OnTimeControlDefaultFixedDeltaTimeChanged);
+            OnTimeControlHyperWarpMaxAttemptedRateChangedEvent?.Remove(OnTimeControlHyperWarpMaxAttemptedRateChanged);
+            OnTimeControlHyperWarpPhysicsAccuracyChangedEvent?.Remove(OnTimeControlHyperWarpPhysicsAccuracyChanged);
+            OnTimeControlHyperWarpMaximumDeltaTimeChangedEvent?.Remove(OnTimeControlHyperWarpMaximumDeltaTimeChanged);
         }
 
         private IEnumerator Configure()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( Configure );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(Configure);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 while (!GlobalSettings.IsReady || !IsValidScene() || TimeWarp.fetch == null || FlightGlobals.Bodies == null || FlightGlobals.Bodies.Count <= 0)
                 {
-                    yield return new WaitForSeconds( 1f );
+                    yield return new WaitForSeconds(1f);
                 }
 
                 while (HyperWarpController.gameNode == null)
                 {
-                    Log.Info( "Scenario Object has not loaded the necessary config node yet", logBlockName );
-                    yield return new WaitForSeconds( 1f );
+                    Log.Info("Scenario Object has not loaded the necessary config node yet", logBlockName);
+                    yield return new WaitForSeconds(1f);
                 }
 
-                Log.Info( "Setting Custom Hyper Warp Rates and Physics Accuracy to Defaults", logBlockName );
+                Log.Info("Setting Custom Hyper Warp Rates and Physics Accuracy to Defaults", logBlockName);
                 customHyperWarpRates = defaultCustomHyperWarpRates;
                 customHyperWarpPhysicsAccuracyRates = defaultCustomHyperWarpPhysicsAccuracyRates;
 
                 Load();
 
-                OnTimeControlDefaultFixedDeltaTimeChangedEvent = GameEvents.FindEvent<EventData<float>>( nameof( TimeControlEvents.OnTimeControlDefaultFixedDeltaTimeChanged ) );
-                OnTimeControlDefaultFixedDeltaTimeChangedEvent?.Add( OnTimeControlDefaultFixedDeltaTimeChanged );
+                OnTimeControlDefaultFixedDeltaTimeChangedEvent = GameEvents.FindEvent<EventData<float>>(nameof(TimeControlEvents.OnTimeControlDefaultFixedDeltaTimeChanged));
+                OnTimeControlDefaultFixedDeltaTimeChangedEvent?.Add(OnTimeControlDefaultFixedDeltaTimeChanged);
 
-                OnTimeControlHyperWarpMaxAttemptedRateChangedEvent = GameEvents.FindEvent<EventData<float>>( nameof( TimeControlEvents.OnTimeControlHyperWarpMaxAttemptedRateChanged ) );
-                OnTimeControlHyperWarpMaxAttemptedRateChangedEvent?.Add( OnTimeControlHyperWarpMaxAttemptedRateChanged );
+                OnTimeControlHyperWarpMaxAttemptedRateChangedEvent = GameEvents.FindEvent<EventData<float>>(nameof(TimeControlEvents.OnTimeControlHyperWarpMaxAttemptedRateChanged));
+                OnTimeControlHyperWarpMaxAttemptedRateChangedEvent?.Add(OnTimeControlHyperWarpMaxAttemptedRateChanged);
 
-                OnTimeControlHyperWarpPhysicsAccuracyChangedEvent = GameEvents.FindEvent<EventData<float>>( nameof( TimeControlEvents.OnTimeControlHyperWarpPhysicsAccuracyChanged ) );
-                OnTimeControlHyperWarpPhysicsAccuracyChangedEvent?.Add( OnTimeControlHyperWarpPhysicsAccuracyChanged );
+                OnTimeControlHyperWarpPhysicsAccuracyChangedEvent = GameEvents.FindEvent<EventData<float>>(nameof(TimeControlEvents.OnTimeControlHyperWarpPhysicsAccuracyChanged));
+                OnTimeControlHyperWarpPhysicsAccuracyChangedEvent?.Add(OnTimeControlHyperWarpPhysicsAccuracyChanged);
 
-                OnTimeControlHyperWarpMaximumDeltaTimeChangedEvent = GameEvents.FindEvent<EventData<float>>( nameof( TimeControlEvents.OnTimeControlHyperWarpMaximumDeltaTimeChanged ) );
-                OnTimeControlHyperWarpMaximumDeltaTimeChangedEvent?.Add( OnTimeControlHyperWarpMaximumDeltaTimeChanged );
+                OnTimeControlHyperWarpMaximumDeltaTimeChangedEvent = GameEvents.FindEvent<EventData<float>>(nameof(TimeControlEvents.OnTimeControlHyperWarpMaximumDeltaTimeChanged));
+                OnTimeControlHyperWarpMaximumDeltaTimeChangedEvent?.Add(OnTimeControlHyperWarpMaximumDeltaTimeChanged);
 
-                OnTimeControlTimePausedEvent = GameEvents.FindEvent<EventData<bool>>( nameof( TimeControlEvents.OnTimeControlTimePaused ) );
-                OnTimeControlTimePausedEvent?.Add( this.OnTimeControlTimePaused );
+                OnTimeControlTimePausedEvent = GameEvents.FindEvent<EventData<bool>>(nameof(TimeControlEvents.OnTimeControlTimePaused));
+                OnTimeControlTimePausedEvent?.Add(this.OnTimeControlTimePaused);
 
-                OnTimeControlTimeUnpausedEvent = GameEvents.FindEvent<EventData<bool>>( nameof( TimeControlEvents.OnTimeControlTimeUnpaused ) );
-                OnTimeControlTimeUnpausedEvent?.Add( this.OnTimeControlTimeUnpaused );
+                OnTimeControlTimeUnpausedEvent = GameEvents.FindEvent<EventData<bool>>(nameof(TimeControlEvents.OnTimeControlTimeUnpaused));
+                OnTimeControlTimeUnpausedEvent?.Add(this.OnTimeControlTimeUnpaused);
 
                 currentScreenMessage = null;
                 currentScreenMessageStyle = ScreenMessageStyle.UPPER_CENTER;
@@ -355,14 +355,14 @@ namespace TimeControl
                 UpdateDefaultScreenMessage();
                 CacheHyperWarpMessages();
 
-                GameEvents.onGameSceneLoadRequested.Add( this.onGameSceneLoadRequested );
-                GameEvents.onPartDestroyed.Add( this.onPartDestroyed );
-                GameEvents.onVesselDestroy.Add( this.onVesselDestroy );
-                GameEvents.onLevelWasLoaded.Add( this.onLevelWasLoaded );
+                GameEvents.onGameSceneLoadRequested.Add(this.onGameSceneLoadRequested);
+                GameEvents.onPartDestroyed.Add(this.onPartDestroyed);
+                GameEvents.onVesselDestroy.Add(this.onVesselDestroy);
+                GameEvents.onLevelWasLoaded.Add(this.onLevelWasLoaded);
 
-                GameEvents.OnGameSettingsApplied.Add( this.OnGameSettingsApplied );
+                GameEvents.OnGameSettingsApplied.Add(this.OnGameSettingsApplied);
 
-                FlightCamera[] cams = FlightCamera.FindObjectsOfType( typeof( FlightCamera ) ) as FlightCamera[];
+                FlightCamera[] cams = FlightCamera.FindObjectsOfType(typeof(FlightCamera)) as FlightCamera[];
                 if (cams.Length > 0)
                 {
                     cam = cams[0];
@@ -371,7 +371,7 @@ namespace TimeControl
                 this.maxAttemptedRate = GlobalSettings.Instance.HyperWarpMaxAttemptedRate;
                 this.physicsAccuracy = GlobalSettings.Instance.HyperWarpPhysicsAccuracy;
 
-                Log.Info( nameof( HyperWarpController ) + " is Ready!", logBlockName );
+                Log.Info(nameof(HyperWarpController) + " is Ready!", logBlockName);
                 IsReady = true;
                 yield break;
             }
@@ -383,7 +383,7 @@ namespace TimeControl
             {
                 if (GlobalSettings.Instance.CameraZoomFix)
                 {
-                    cam.SetDistanceImmediate( cam.Distance );
+                    cam.SetDistanceImmediate(cam.Distance);
                 }
 
                 if (!CanHyperWarp)
@@ -409,13 +409,13 @@ namespace TimeControl
             }
         }
 
-#if false
+#if true
         private void FixedUpdate()
         {
             if (TimeWarp.fetch != null)
-            Log.Info("HyperWarpController.FixedUpdate, isHyperWarping: " + isHyperWarping+ ",  TimeWarp.current_rate_index: " + TimeWarp.fetch.current_rate_index +
-                ", WarpMode: " + TimeWarp.WarpMode);
-            if (isHyperWarping && TimeWarp.fetch!= null &&  TimeWarp.fetch.current_rate_index == 0)
+                Log.Info("HyperWarpController.FixedUpdate, isHyperWarping: " + isHyperWarping + ",  TimeWarp.current_rate_index: " + TimeWarp.fetch.current_rate_index +
+                    ", WarpMode: " + TimeWarp.WarpMode);
+            if (isHyperWarping && TimeWarp.fetch != null && TimeWarp.fetch.current_rate_index == 1)
             {
                 isHyperWarping = false;
             }
@@ -449,7 +449,7 @@ namespace TimeControl
 
         private void UpdateScreenMessage()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( UpdateScreenMessage );
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(UpdateScreenMessage);
             if ((!this.isHyperWarping) || isGamePaused || !this.ShowOnscreenMessages)
             {
                 RemoveCurrentScreenMessage();
@@ -459,10 +459,10 @@ namespace TimeControl
             ScreenMessage s;
             if (PerformanceCountersOn)
             {
-                string msg = "HYPER-WARP ".MemoizedConcat( (Math.Round( this.PhysicsTimeRatio, 1 )).MemoizedToString("0.0") ).MemoizedConcat( "x" );
+                string msg = "HYPER-WARP ".MemoizedConcat((Math.Round(this.PhysicsTimeRatio, 1)).MemoizedToString("0.0")).MemoizedConcat("x");
                 if (msg != (this.currentScreenMessage?.message ?? ""))
                 {
-                    s = new ScreenMessage( msg, Mathf.Infinity, ScreenMessageStyle.UPPER_CENTER );
+                    s = new ScreenMessage(msg, Mathf.Infinity, ScreenMessageStyle.UPPER_CENTER);
                 }
                 else
                 {
@@ -477,20 +477,20 @@ namespace TimeControl
             if (s.message != (this.currentScreenMessage?.message ?? ""))
             {
                 RemoveCurrentScreenMessage();
-                this.currentScreenMessage = ScreenMessages.PostScreenMessage( s );
+                this.currentScreenMessage = ScreenMessages.PostScreenMessage(s);
                 if (Log.LoggingLevel == LogSeverity.Trace)
                 {
-                    Log.Trace( "Posting new screen message ".MemoizedConcat( this.currentScreenMessage.message ), logBlockName );
+                    Log.Trace("Posting new screen message ".MemoizedConcat(this.currentScreenMessage.message), logBlockName);
                 }
             }
         }
-#endregion
+        #endregion
 
         #region GameEvents
         private void OnTimeControlTimePaused(bool b)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( OnTimeControlTimePaused );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(OnTimeControlTimePaused);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 isGamePaused = true;
                 RemoveCurrentScreenMessage();
@@ -499,8 +499,8 @@ namespace TimeControl
 
         private void OnTimeControlTimeUnpaused(bool b)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( OnTimeControlTimeUnpaused );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(OnTimeControlTimeUnpaused);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 isGamePaused = false;
                 needToUpdateTimeScale = true;
@@ -509,10 +509,10 @@ namespace TimeControl
 
         private void onLevelWasLoaded(GameScenes gs)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( onGameSceneLoadRequested );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(onGameSceneLoadRequested);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                FlightCamera[] cams = FlightCamera.FindObjectsOfType( typeof( FlightCamera ) ) as FlightCamera[];
+                FlightCamera[] cams = FlightCamera.FindObjectsOfType(typeof(FlightCamera)) as FlightCamera[];
                 if (cams.Length > 0)
                 {
                     cam = cams[0];
@@ -533,21 +533,21 @@ namespace TimeControl
 
         private void onGameSceneLoadRequested(GameScenes gs)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( onGameSceneLoadRequested );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
-            {                
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(onGameSceneLoadRequested);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
+            {
                 DeactivateHyper();
             }
         }
 
         private void onPartDestroyed(Part p)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( onPartDestroyed );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(onPartDestroyed);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (this.isHyperWarping && (HighLogic.LoadedSceneIsFlight && (p.vessel != null && FlightGlobals.ActiveVessel != null) && p.vessel == FlightGlobals.ActiveVessel))
                 {
-                    Log.Info( "Part on Active Vessel Destroyed. Cancelling Hyper-Warp." );
+                    Log.Info("Part on Active Vessel Destroyed. Cancelling Hyper-Warp.");
                     DeactivateHyper();
                 }
             }
@@ -555,12 +555,12 @@ namespace TimeControl
 
         private void onVesselDestroy(Vessel v)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( onVesselDestroy );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(onVesselDestroy);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (this.isHyperWarping && (HighLogic.LoadedSceneIsFlight && (FlightGlobals.ActiveVessel == null || v == FlightGlobals.ActiveVessel)))
                 {
-                    Log.Info( "Active Vessel Destroyed. Cancelling Hyper-Warp." );
+                    Log.Info("Active Vessel Destroyed. Cancelling Hyper-Warp.");
                     DeactivateHyper();
                 }
             }
@@ -568,8 +568,8 @@ namespace TimeControl
 
         private void OnGameSettingsApplied()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( OnGameSettingsApplied );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(OnGameSettingsApplied);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
 
             }
@@ -581,8 +581,8 @@ namespace TimeControl
 
         private void OnTimeControlHyperWarpMaxAttemptedRateChanged(float rate)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( OnTimeControlHyperWarpMaxAttemptedRateChanged );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(OnTimeControlHyperWarpMaxAttemptedRateChanged);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (isHyperWarping && !isGamePaused)
                 {
@@ -593,8 +593,8 @@ namespace TimeControl
 
         private void OnTimeControlHyperWarpPhysicsAccuracyChanged(float rate)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( OnTimeControlHyperWarpPhysicsAccuracyChanged );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(OnTimeControlHyperWarpPhysicsAccuracyChanged);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (isHyperWarping && !isGamePaused)
                 {
@@ -605,8 +605,8 @@ namespace TimeControl
 
         private void OnTimeControlDefaultFixedDeltaTimeChanged(float rate)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( OnTimeControlDefaultFixedDeltaTimeChanged );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(OnTimeControlDefaultFixedDeltaTimeChanged);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (isHyperWarping && !isGamePaused)
                 {
@@ -617,8 +617,8 @@ namespace TimeControl
 
         private void OnTimeControlHyperWarpMaximumDeltaTimeChanged(float rate)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( OnTimeControlHyperWarpMaximumDeltaTimeChanged );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(OnTimeControlHyperWarpMaximumDeltaTimeChanged);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (isHyperWarping && !isGamePaused)
                 {
@@ -631,18 +631,18 @@ namespace TimeControl
 
         public void ActivateHyper()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( ActivateHyper );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(ActivateHyper);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (!CanHyperWarp)
                 {
-                    Log.Error( "Cannot hyper warp in this game state.", logBlockName );
+                    Log.Error("Cannot hyper warp in this game state.", logBlockName);
                     DeactivateHyper();
                     return;
                 }
                 if (isHyperWarping)
                 {
-                    Log.Info( "Already hyper warping.", logBlockName );
+                    Log.Info("Already hyper warping.", logBlockName);
                     return;
                 }
 
@@ -651,7 +651,7 @@ namespace TimeControl
                     TimeController.Instance.Unpause();
                 }
 
-                SetCanRailsWarp( false );
+                SetCanRailsWarp(false);
                 isHyperWarping = true;
 
                 SetHyperTimeScale();
@@ -662,14 +662,14 @@ namespace TimeControl
 
         public void DeactivateHyper()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( DeactivateHyper );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(DeactivateHyper);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 ResetWarpToUT();
-                
+
                 if (!this.isHyperWarping)
                 {
-                    Log.Info( "Hyper warp not currently running.", logBlockName );
+                    Log.Info("Hyper warp not currently running.", logBlockName);
                     return;
                 }
 
@@ -678,14 +678,14 @@ namespace TimeControl
                 ResetMaximumDeltaTime();
 
                 isHyperWarping = false;
-                SetCanRailsWarp( true );
+                SetCanRailsWarp(true);
             }
         }
 
         public void ToggleHyper()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( ToggleHyper );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(ToggleHyper);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (isHyperWarping)
                 {
@@ -699,7 +699,7 @@ namespace TimeControl
                     }
                     else
                     {
-                        Log.Error( "Cannot hyper warp in this game state.", logBlockName );
+                        Log.Error("Cannot hyper warp in this game state.", logBlockName);
                         DeactivateHyper();
                     }
                 }
@@ -708,10 +708,10 @@ namespace TimeControl
 
         public void SlowDown(float step = 1f)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( SlowDown );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(SlowDown);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( "Trying to decrease Hyper Warp Rate", logBlockName );
+                Log.Info("Trying to decrease Hyper Warp Rate", logBlockName);
                 MaxAttemptedRate -= step;
                 return;
             }
@@ -719,41 +719,41 @@ namespace TimeControl
 
         public void SpeedUp(float step = 1f)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( SpeedUp );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(SpeedUp);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( "Trying to increase Hyper Warp Rate", logBlockName );
+                Log.Info("Trying to increase Hyper Warp Rate", logBlockName);
                 MaxAttemptedRate += step;
             }
         }
 
         private void SetPhysicsRateFromList()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( SetPhysicsRateFromList );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(SetPhysicsRateFromList);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                int newRateIndex = customHyperWarpRates.FindIndex( x => Mathf.Approximately( x, MaxAttemptedRate ) );
+                int newRateIndex = customHyperWarpRates.FindIndex(x => Mathf.Approximately(x, MaxAttemptedRate));
                 float newPhysRate = customHyperWarpPhysicsAccuracyRates[newRateIndex];
 
-                Log.Info( String.Format( "Trying to set Physics Rate to {0}.", newPhysRate ), logBlockName );
+                Log.Info(String.Format("Trying to set Physics Rate to {0}.", newPhysRate), logBlockName);
                 PhysicsAccuracy = newPhysRate;
             }
         }
 
         public void ChangeToLowerRate()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( ChangeToLowerRate );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(ChangeToLowerRate);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 float currentMaxAttemptedRate = MaxAttemptedRate;
-                float newRate = customHyperWarpRates.FindLast( x => x < currentMaxAttemptedRate );
+                float newRate = customHyperWarpRates.FindLast(x => x < currentMaxAttemptedRate);
                 if (Mathf.Approximately(newRate, 0.0f))
                 {
                     // Do nothing, rate is already lowest it can go
                     return;
                 }
 
-                Log.Info( String.Format( "Trying to set Hyper Warp Rate to {0}.", newRate ), logBlockName );
+                Log.Info(String.Format("Trying to set Hyper Warp Rate to {0}.", newRate), logBlockName);
                 MaxAttemptedRate = newRate;
 
                 SetPhysicsRateFromList();
@@ -762,17 +762,17 @@ namespace TimeControl
 
         public void ChangeToHigherRate()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( ChangeToHigherRate );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(ChangeToHigherRate);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 float currentMaxAttemptedRate = MaxAttemptedRate;
-                float newRate = customHyperWarpRates.Find( x => x > currentMaxAttemptedRate );
-                if (Mathf.Approximately( newRate, 0.0f ))
+                float newRate = customHyperWarpRates.Find(x => x > currentMaxAttemptedRate);
+                if (Mathf.Approximately(newRate, 0.0f))
                 {
-                    Log.Info( "Maximum Hyper Warp Rate in List Reached.", logBlockName );
+                    Log.Info("Maximum Hyper Warp Rate in List Reached.", logBlockName);
                     return;
                 }
-                Log.Info( String.Format( "Trying to set Hyper Warp Rate to {0}.", newRate ), logBlockName );
+                Log.Info(String.Format("Trying to set Hyper Warp Rate to {0}.", newRate), logBlockName);
                 MaxAttemptedRate = newRate;
 
                 SetPhysicsRateFromList();
@@ -782,23 +782,23 @@ namespace TimeControl
         public List<float> GetCustomHyperWarpRates()
         {
             var v = new List<float>();
-            v.AddRange( customHyperWarpRates );
+            v.AddRange(customHyperWarpRates);
             return v;
         }
 
         public List<float> GetCustomHyperWarpPhysicsAccuracyRates()
         {
             var v = new List<float>();
-            v.AddRange( customHyperWarpPhysicsAccuracyRates );
+            v.AddRange(customHyperWarpPhysicsAccuracyRates);
             return v;
         }
 
         public void DecreasePhysicsAccuracy(float step = 0.5f)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( DecreasePhysicsAccuracy );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(DecreasePhysicsAccuracy);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( "Trying to decrease Hyper Warp Physics Accuracy", logBlockName );
+                Log.Info("Trying to decrease Hyper Warp Physics Accuracy", logBlockName);
                 PhysicsAccuracy += step;
                 return;
             }
@@ -806,42 +806,42 @@ namespace TimeControl
 
         public void IncreasePhysicsAccuracy(float step = 0.5f)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( IncreasePhysicsAccuracy );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(IncreasePhysicsAccuracy);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( "Trying to increase Physics Accuracy", logBlockName );
+                Log.Info("Trying to increase Physics Accuracy", logBlockName);
                 PhysicsAccuracy -= step;
             }
         }
 
         public bool HyperWarpForDuration(int warpHours, int warpMinutes, int warpSeconds)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( HyperWarpForDuration );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(HyperWarpForDuration);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( String.Format( "Trying to Hyper Warp for {0} : {1} : {2} ", warpHours, warpMinutes, warpSeconds ), logBlockName );
+                Log.Info(String.Format("Trying to Hyper Warp for {0} : {1} : {2} ", warpHours, warpMinutes, warpSeconds), logBlockName);
                 double totalSeconds = (warpHours * KSPUtil.dateTimeFormatter.Hour) + (warpMinutes * KSPUtil.dateTimeFormatter.Minute) + warpSeconds;
-                return HyperWarpForSeconds( totalSeconds );
+                return HyperWarpForSeconds(totalSeconds);
             }
         }
 
         public bool HyperWarpForSeconds(double seconds)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( HyperWarpForSeconds );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(HyperWarpForSeconds);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( "Trying to Hyper Warp for " + seconds.ToString() + " seconds", logBlockName );
+                Log.Info("Trying to Hyper Warp for " + seconds.ToString() + " seconds", logBlockName);
                 double UT = CurrentUT + seconds;
-                return HyperWarpToUT( UT );
+                return HyperWarpToUT(UT);
             }
         }
 
         public bool HyperWarpToUT(double UT)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( HyperWarpToUT );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(HyperWarpToUT);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                StartCoroutine( ExecuteWarpToUT( UT ) );
+                StartCoroutine(ExecuteWarpToUT(UT));
                 return true;
             }
         }
@@ -855,55 +855,55 @@ namespace TimeControl
         /// <exception cref="ArgumentException">Thrown when parameter <paramref name="wr"/> has too few or too many elements</exception>
         public void SetCustomHyperWarpRates(List<float> wr, List<float> ar)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( SetCustomHyperWarpRates );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(SetCustomHyperWarpRates);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (wr == null)
                 {
                     const string message = "New Custom Hyper Warp Rate List cannot be null";
-                    Log.Error( message, logBlockName );
-                    throw new ArgumentNullException( "wr", message );
+                    Log.Error(message, logBlockName);
+                    throw new ArgumentNullException("wr", message);
                 }
                 if (ar == null)
                 {
                     const string message = "New Custom Hyper Warp Physics Accuracy List cannot be null";
-                    Log.Error( message, logBlockName );
-                    throw new ArgumentNullException( "wr", message );
+                    Log.Error(message, logBlockName);
+                    throw new ArgumentNullException("wr", message);
                 }
                 if (wr.Count < 2)
                 {
                     const string message = "New Custom Hyper Warp Rate List must have at least 2 warp rates (one of which is 1.0f)";
-                    Log.Error( message, logBlockName );
-                    throw new ArgumentException( message, "wr" );
+                    Log.Error(message, logBlockName);
+                    throw new ArgumentException(message, "wr");
                 }
                 if (wr.Count > 99)
                 {
                     const string message = "New Custom Hyper Warp Rate List can only have max of 99 warp rates";
-                    Log.Error( message, logBlockName );
-                    throw new ArgumentException( message, "wr" );
+                    Log.Error(message, logBlockName);
+                    throw new ArgumentException(message, "wr");
                 }
                 if (ar.Count != wr.Count)
                 {
                     const string message = "Custom Hyper Warp Rate List and Custom Hyper Warp Physics Accuracy List must have the same number of elements";
-                    Log.Error( message, logBlockName );
-                    throw new ArgumentException( message, "wr" );
+                    Log.Error(message, logBlockName);
+                    throw new ArgumentException(message, "wr");
                 }
 
                 customHyperWarpRates = new List<float>();
-                customHyperWarpRates.AddRange( wr );
+                customHyperWarpRates.AddRange(wr);
 
                 customHyperWarpPhysicsAccuracyRates = new List<float>();
-                customHyperWarpPhysicsAccuracyRates.AddRange( ar );
-                
+                customHyperWarpPhysicsAccuracyRates.AddRange(ar);
+
                 RatesNeedUpdatedAndSaved = true;
-                Log.Info( "New Custom Hyper Warp Rates Set", logBlockName );
+                Log.Info("New Custom Hyper Warp Rates Set", logBlockName);
             }
         }
 
         public void ResetHyperWarpRates()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( SetCustomHyperWarpRates );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(SetCustomHyperWarpRates);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 this.SetCustomHyperWarpRatesToDefault();
             }
@@ -916,12 +916,12 @@ namespace TimeControl
         /// </summary>
         private void CacheHyperWarpMessages()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( CacheHyperWarpMessages );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(CacheHyperWarpMessages);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 for (int i = 0; i <= 2000; i++)
                 {
-                    this.HyperWarpMessagesCache.Add( new ScreenMessage( "HYPER-WARP " + String.Format( "{0:0.0}", Math.Round( ((float)i / 10f), 1 ) ) + "x", Mathf.Infinity, ScreenMessageStyle.UPPER_CENTER ) );
+                    this.HyperWarpMessagesCache.Add(new ScreenMessage("HYPER-WARP " + String.Format("{0:0.0}", Math.Round(((float)i / 10f), 1)) + "x", Mathf.Infinity, ScreenMessageStyle.UPPER_CENTER));
                 }
             }
         }
@@ -931,10 +931,10 @@ namespace TimeControl
         /// </summary>
         private void UpdateDefaultScreenMessage()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( UpdateDefaultScreenMessage );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(UpdateDefaultScreenMessage);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                defaultScreenMessage = new ScreenMessage( currentScreenMessagePrefix, currentScreenMessageDuration, currentScreenMessageStyle );
+                defaultScreenMessage = new ScreenMessage(currentScreenMessagePrefix, currentScreenMessageDuration, currentScreenMessageStyle);
             }
         }
 
@@ -943,7 +943,7 @@ namespace TimeControl
         /// </summary>
         private void SetHyperTimeScale()
         {
-            TimeController.Instance.TimeScale = Mathf.Round( MaxAttemptedRate );
+            TimeController.Instance.TimeScale = Mathf.Round(MaxAttemptedRate);
         }
 
         /// <summary>
@@ -1004,28 +1004,28 @@ namespace TimeControl
 
         private IEnumerator ExecuteWarpToUT(double UT)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( ExecuteWarpToUT );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(ExecuteWarpToUT);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 double CurrentUT = Planetarium.GetUniversalTime();
 
                 if (CurrentUT >= UT)
                 {
-                    Log.Warning( "Cannot warp to UT " + UT.ToString() + ". Already passed! Current UT is " + CurrentUT, logBlockName );
+                    Log.Warning("Cannot warp to UT " + UT.ToString() + ". Already passed! Current UT is " + CurrentUT, logBlockName);
                     yield break;
                 }
 
                 IsHyperWarpingToUT = true;
                 HyperWarpingToUT = UT;
 
-                Log.Info( "Trying to Hyper Warp to UT " + UT, logBlockName );
+                Log.Info("Trying to Hyper Warp to UT " + UT, logBlockName);
 
                 ActivateHyper();
                 if (this.isHyperWarping && (Planetarium.GetUniversalTime() < UT))
                 {
-                    yield return new WaitForSeconds( (float)(UT - Planetarium.GetUniversalTime()) );
+                    yield return new WaitForSeconds((float)(UT - Planetarium.GetUniversalTime()));
                 }
-                
+
                 if (this.isHyperWarping)
                 {
                     TimeController.Instance.PauseOnNextFixedUpdate = HyperPauseOnTimeReached;
@@ -1039,8 +1039,8 @@ namespace TimeControl
 
         private void ResetWarpToUT()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( ResetWarpToUT );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(ResetWarpToUT);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (this.isHyperWarpingToUT)
                 {
@@ -1052,9 +1052,9 @@ namespace TimeControl
 
         private void RemoveCurrentScreenMessage()
         {
-            if (ScreenMessages.Instance?.ActiveMessages?.Contains( this.currentScreenMessage ) ?? false)
+            if (ScreenMessages.Instance?.ActiveMessages?.Contains(this.currentScreenMessage) ?? false)
             {
-                ScreenMessages.RemoveMessage( this.currentScreenMessage );
+                ScreenMessages.RemoveMessage(this.currentScreenMessage);
             }
             this.currentScreenMessage = null;
         }
@@ -1068,34 +1068,34 @@ namespace TimeControl
         #region Saving/Loading to ConfigNode
         public void Load()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( Load );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(Load);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( "Loading from Internal Config", logBlockName );
-                this.LoadCustomHyperWarpRates( gameNode );
+                Log.Info("Loading from Internal Config", logBlockName);
+                this.LoadCustomHyperWarpRates(gameNode);
             }
         }
 
         public void Load(ConfigNode gameNode)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( Load );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(Load);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( "Loading from Config Node", logBlockName );
-                this.LoadCustomHyperWarpRates( gameNode );
+                Log.Info("Loading from Config Node", logBlockName);
+                this.LoadCustomHyperWarpRates(gameNode);
             }
         }
 
         private void SetCustomHyperWarpRatesToDefault()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( SetCustomHyperWarpRatesToDefault );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(SetCustomHyperWarpRatesToDefault);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 customHyperWarpRates = new List<float>();
-                customHyperWarpRates.AddRange( defaultCustomHyperWarpRates );
+                customHyperWarpRates.AddRange(defaultCustomHyperWarpRates);
 
                 customHyperWarpPhysicsAccuracyRates = new List<float>();
-                customHyperWarpPhysicsAccuracyRates.AddRange( defaultCustomHyperWarpPhysicsAccuracyRates );
+                customHyperWarpPhysicsAccuracyRates.AddRange(defaultCustomHyperWarpPhysicsAccuracyRates);
             }
         }
 
@@ -1105,46 +1105,46 @@ namespace TimeControl
         /// <param name="cn"></param>
         private void LoadCustomHyperWarpRates(ConfigNode cn)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( LoadCustomHyperWarpRates );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(LoadCustomHyperWarpRates);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (cn == null)
                 {
-                    Log.Error( "ConfigNode " + nameof( cn ) + " is NULL, and cannot find existing settings config node.", logBlockName );
+                    Log.Error("ConfigNode " + nameof(cn) + " is NULL, and cannot find existing settings config node.", logBlockName);
                     return;
                 }
 
                 // Rates List
-                if (!cn.HasNode( customHyperWarpRatesNodeName ))
+                if (!cn.HasNode(customHyperWarpRatesNodeName))
                 {
                     const string message = "No custom hyper warp rates node in config. Using defaults.";
-                    Log.Warning( message, logBlockName );
+                    Log.Warning(message, logBlockName);
                     SetCustomHyperWarpRatesToDefault();
                     return;
                 }
 
-                ConfigNode customHyperWarpRatesNode = cn.GetNode( customHyperWarpRatesNodeName );
+                ConfigNode customHyperWarpRatesNode = cn.GetNode(customHyperWarpRatesNodeName);
                 List<float> ltcwr = new List<float>();
 
                 bool hyperWarpRatesParseError = false;
-                foreach (string s in customHyperWarpRatesNode.GetValuesStartsWith( customHyperWarpRateNodeName ))
+                foreach (string s in customHyperWarpRatesNode.GetValuesStartsWith(customHyperWarpRateNodeName))
                 {
                     float num;
-                    if (!(float.TryParse( s, out num )))
+                    if (!(float.TryParse(s, out num)))
                     {
                         string message = "A custom hyper warp rate is not defined as a number (value in the config was " + s + ").";
-                        Log.Warning( message, logBlockName );
+                        Log.Warning(message, logBlockName);
                         hyperWarpRatesParseError = true;
                         ltcwr = null;
                         break;
                     }
-                    ltcwr.Add( num );
+                    ltcwr.Add(num);
                 }
 
                 if (hyperWarpRatesParseError)
                 {
                     string message = "Error loading custom hyper warp rates from config. Using defaults.";
-                    Log.Warning( message, logBlockName );
+                    Log.Warning(message, logBlockName);
                     SetCustomHyperWarpRatesToDefault();
                     return;
                 }
@@ -1152,14 +1152,14 @@ namespace TimeControl
                 try
                 {
                     customHyperWarpRates = new List<float>();
-                    customHyperWarpRates.AddRange( ltcwr );
+                    customHyperWarpRates.AddRange(ltcwr);
                 }
                 catch (Exception ex)
                 {
                     if (ex is ArgumentException || ex is ArgumentNullException)
                     {
                         string message = "Argument Exception when setting custom warp rates. Using defaults.";
-                        Log.Warning( message, logBlockName );
+                        Log.Warning(message, logBlockName);
                         SetCustomHyperWarpRatesToDefault();
                     }
                     else
@@ -1167,51 +1167,51 @@ namespace TimeControl
                 }
 
                 // Physics Accuracy Rates List
-                if (!cn.HasNode( customHyperWarpPhysicsAccuracyRatesNodeName ))
+                if (!cn.HasNode(customHyperWarpPhysicsAccuracyRatesNodeName))
                 {
                     const string message = "No custom hyper warp physics accuracy rates node in config. Using defaults.";
-                    Log.Warning( message, logBlockName );
+                    Log.Warning(message, logBlockName);
                     SetCustomHyperWarpRatesToDefault();
                     return;
                 }
 
-                ConfigNode customHyperWarpPhysicsAccuracyRatesNode = cn.GetNode( customHyperWarpPhysicsAccuracyRatesNodeName );
+                ConfigNode customHyperWarpPhysicsAccuracyRatesNode = cn.GetNode(customHyperWarpPhysicsAccuracyRatesNodeName);
                 List<float> ltcar = new List<float>();
 
                 bool hyperWarpPhysicsAccuracyRatesParseError = false;
-                foreach (string s in customHyperWarpPhysicsAccuracyRatesNode.GetValuesStartsWith( customHyperWarpPhysicsAccuracyRatesNodeName ))
+                foreach (string s in customHyperWarpPhysicsAccuracyRatesNode.GetValuesStartsWith(customHyperWarpPhysicsAccuracyRatesNodeName))
                 {
                     float num;
-                    if (!(float.TryParse( s, out num )))
+                    if (!(float.TryParse(s, out num)))
                     {
                         string message = "A custom hyper warp physics accuracy rate is not defined as a number (value in the config was " + s + ").";
-                        Log.Warning( message, logBlockName );
+                        Log.Warning(message, logBlockName);
                         hyperWarpPhysicsAccuracyRatesParseError = true;
                         ltcar = null;
                         break;
                     }
-                    ltcar.Add( num );
+                    ltcar.Add(num);
                 }
 
                 if (hyperWarpPhysicsAccuracyRatesParseError)
                 {
                     string message = "Error loading custom hyper warp physics accuracy rates from config. Using defaults.";
-                    Log.Warning( message, logBlockName );
+                    Log.Warning(message, logBlockName);
                     SetCustomHyperWarpRatesToDefault();
                     return;
                 }
 
                 try
                 {
-                    customHyperWarpPhysicsAccuracyRates  = new List<float>();
-                    customHyperWarpPhysicsAccuracyRates.AddRange( ltcar );
+                    customHyperWarpPhysicsAccuracyRates = new List<float>();
+                    customHyperWarpPhysicsAccuracyRates.AddRange(ltcar);
                 }
                 catch (Exception ex)
                 {
                     if (ex is ArgumentException || ex is ArgumentNullException)
                     {
                         string message = "Argument Exception when setting custom hyper warp physics accuracy rates. Using defaults.";
-                        Log.Warning( message, logBlockName );
+                        Log.Warning(message, logBlockName);
                         SetCustomHyperWarpRatesToDefault();
                     }
                     else
@@ -1221,7 +1221,7 @@ namespace TimeControl
                 if (customHyperWarpPhysicsAccuracyRates.Count != customHyperWarpRates.Count || customHyperWarpRates.Count < 2)
                 {
                     string message = "Problem using rates in config node. Switching to defaults.";
-                    Log.Warning( message, logBlockName );
+                    Log.Warning(message, logBlockName);
                     SetCustomHyperWarpRatesToDefault();
                 }
             }
@@ -1229,11 +1229,11 @@ namespace TimeControl
 
         public void Save(ConfigNode gameNode)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( Save );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(Save);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
-                Log.Info( "Saving to Config", logBlockName );
-                this.SaveCustomHyperWarpRates( gameNode );
+                Log.Info("Saving to Config", logBlockName);
+                this.SaveCustomHyperWarpRates(gameNode);
             }
         }
 
@@ -1242,55 +1242,55 @@ namespace TimeControl
         /// </summary>
         private void SaveCustomHyperWarpRates(ConfigNode cn)
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( SaveCustomHyperWarpRates );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(SaveCustomHyperWarpRates);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 if (cn == null)
                 {
-                    Log.Error( "ConfigNode " + nameof( cn ) + " is NULL, and cannot find existing settings config node.", logBlockName );
+                    Log.Error("ConfigNode " + nameof(cn) + " is NULL, and cannot find existing settings config node.", logBlockName);
                     return;
                 }
 
                 // Rate List
 
                 // Rebuild the node
-                if (cn.HasNode( customHyperWarpRatesNodeName ))
+                if (cn.HasNode(customHyperWarpRatesNodeName))
                 {
-                    cn.RemoveNode( customHyperWarpRatesNodeName );
+                    cn.RemoveNode(customHyperWarpRatesNodeName);
                 }
-                ConfigNode customHyperWarpRatesNode = cn.AddNode( customHyperWarpRatesNodeName );
+                ConfigNode customHyperWarpRatesNode = cn.AddNode(customHyperWarpRatesNodeName);
 
                 if (customHyperWarpRates == null)
                 {
-                    Log.Error( "No custom hyper warp rates defined. Cannot save", logBlockName );
+                    Log.Error("No custom hyper warp rates defined. Cannot save", logBlockName);
                     return;
                 }
 
-                Log.Trace( "creating custom hyper warp rates node", logBlockName );
+                Log.Trace("creating custom hyper warp rates node", logBlockName);
                 for (int i = 0; i < customHyperWarpRates.Count; i++)
                 {
-                    customHyperWarpRatesNode.AddValue( customHyperWarpRateNodeName + i, customHyperWarpRates[i] );
+                    customHyperWarpRatesNode.AddValue(customHyperWarpRateNodeName + i, customHyperWarpRates[i]);
                 }
 
                 // Physics Accuracy List
 
                 // Rebuild the node
-                if (cn.HasNode( customHyperWarpPhysicsAccuracyRatesNodeName ))
+                if (cn.HasNode(customHyperWarpPhysicsAccuracyRatesNodeName))
                 {
-                    cn.RemoveNode( customHyperWarpPhysicsAccuracyRatesNodeName );
+                    cn.RemoveNode(customHyperWarpPhysicsAccuracyRatesNodeName);
                 }
-                ConfigNode customHyperWarpPhysicsAccuracyRatesNode = cn.AddNode( customHyperWarpPhysicsAccuracyRatesNodeName );
+                ConfigNode customHyperWarpPhysicsAccuracyRatesNode = cn.AddNode(customHyperWarpPhysicsAccuracyRatesNodeName);
 
                 if (customHyperWarpPhysicsAccuracyRates == null)
                 {
-                    Log.Error( "No custom hyper warp physics accuracy rates defined. Cannot save", logBlockName );
+                    Log.Error("No custom hyper warp physics accuracy rates defined. Cannot save", logBlockName);
                     return;
                 }
 
-                Log.Trace( "creating custom hyper warp physics accuracy node", logBlockName );
+                Log.Trace("creating custom hyper warp physics accuracy node", logBlockName);
                 for (int i = 0; i < customHyperWarpPhysicsAccuracyRates.Count; i++)
                 {
-                    customHyperWarpPhysicsAccuracyRatesNode.AddValue( customHyperWarpPhysicsAccuracyRatesNodeName + i, customHyperWarpPhysicsAccuracyRates[i] );
+                    customHyperWarpPhysicsAccuracyRatesNode.AddValue(customHyperWarpPhysicsAccuracyRatesNodeName + i, customHyperWarpPhysicsAccuracyRates[i]);
                 }
             }
         }
@@ -1300,13 +1300,13 @@ namespace TimeControl
         /// </summary>
         private void SaveWarpRatesSettings()
         {
-            const string logBlockName = nameof( HyperWarpController ) + "." + nameof( SaveWarpRatesSettings );
-            using (EntryExitLogger.EntryExitLog( logBlockName, EntryExitLoggerOptions.All ))
+            const string logBlockName = nameof(HyperWarpController) + "." + nameof(SaveWarpRatesSettings);
+            using (EntryExitLogger.EntryExitLog(logBlockName, EntryExitLoggerOptions.All))
             {
                 // Force a game settings save
                 GameSettings.SaveSettings();
                 RatesNeedUpdatedAndSaved = false;
-                TimeControlEvents.OnTimeControlCustomHyperWarpRatesChanged.Fire( true );
+                TimeControlEvents.OnTimeControlCustomHyperWarpRatesChanged.Fire(true);
             }
         }
 
